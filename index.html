@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Экотропа у озера Круглое</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Полевой журнал: карта — первый экран, под ней разворот расчётов; синие чернила, песок тропы, один акцент — синий */
+:root{
+  --bg:#ECF0F6; --paper:#F7F9FC; --ink:#122238; --muted:#53627A; --line:#C6D0DE;
+  --sand:#C9933A; --lotus:#2361C4; --water:#1A7FA8;
+  --good:#4F8F4A; --warn:#D39A2C; --bad:#C1442E;
+  --display:"Prata",Georgia,"Times New Roman",serif;
+  --body:"Golos Text","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1524; --paper:#142034; --ink:#E1E8F2; --muted:#9AAAC2; --line:#2A3A54;
+  --sand:#DDAA55; --lotus:#6FA8F2; --water:#5DC0E0; --good:#6FB36A; --warn:#E3B04B; --bad:#E06A52; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1524; --paper:#142034; --ink:#E1E8F2; --muted:#9AAAC2; --line:#2A3A54;
+  --sand:#DDAA55; --lotus:#6FA8F2; --water:#5DC0E0; --good:#6FB36A; --warn:#E3B04B; --bad:#E06A52; color-scheme:dark}
+
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+img{max-width:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,4.6vw,52px)}
+h2{font-size:clamp(24px,3vw,34px)}
+h3{font-size:19px}
+p{margin:0}
+.lede{max-width:68ch;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:600 11.5px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+a{color:var(--water)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--lotus);outline-offset:2px}
+
+/* шапка */
+.top{padding-block:28px 18px}
+.top .wrap{display:grid;gap:14px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:13.5px}
+.stats{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:4px}
+.stat b{display:block;font:600 24px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+.stat.hl b{color:var(--lotus)}
+.stat b span{font-size:inherit;color:inherit}
+
+/* карта */
+.mapzone{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:0;border:1px solid var(--line);background:var(--paper);border-radius:4px;overflow:hidden}
+#map{height:min(76vh,760px);min-height:420px;background:var(--bg)}
+#panel{border-left:1px solid var(--line);height:min(76vh,760px);min-height:420px;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (max-width:900px){.mapzone{grid-template-columns:1fr}#panel{border-left:0;border-top:1px solid var(--line);height:auto;min-height:0}#map{height:62vh}}
+.leaflet-container{font:13px/1.4 var(--body);background:var(--bg)}
+.leaflet-control-attribution{font-size:10.5px;background:color-mix(in srgb,var(--paper) 85%,transparent)!important;color:var(--muted)}
+.leaflet-control-attribution a{color:var(--muted)}
+.leaflet-bar a{background:var(--paper);color:var(--ink);border-color:var(--line)}
+.layers{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font-size:12.5px;display:grid;gap:5px;max-width:230px;box-shadow:0 2px 10px rgb(0 0 0 / .18)}
+.layers .eyebrow{font-size:10px;margin-top:4px}
+.layers label{display:flex;gap:7px;align-items:center;cursor:pointer}
+.layers input[type=range]{width:100%}
+.layers summary{cursor:pointer;font-weight:600;list-style:none}
+.layers summary::-webkit-details-marker{display:none}
+.wpicon{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font:600 12px/1 var(--mono);color:#fff;border:2px solid #fff;box-shadow:0 1px 6px rgb(0 0 0 / .45)}
+.wpicon.sel{outline:3px solid var(--lotus);outline-offset:1px}
+.camicon{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--lotus);color:#fff;font:600 10px/1 var(--mono);border:1.5px solid #fff;box-shadow:0 1px 4px rgb(0 0 0 / .4)}
+.camicon.own{background:#1E2A44}
+.leaflet-tooltip{font:12.5px/1.35 var(--body)}
+
+/* панель */
+.pcard{display:grid;gap:10px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13.5px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.chip.bad{border-color:var(--bad);color:var(--bad)}
+.chip.good{border-color:var(--good);color:var(--good)}
+.chip.warn{border-color:var(--warn);color:var(--warn)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+.thumbs button{padding:0;border:0;background:var(--line);aspect-ratio:4/3;overflow:hidden;cursor:zoom-in;border-radius:3px;max-width:100%}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.legend{display:grid;gap:4px;font-size:12.5px}
+.legend div{display:flex;gap:8px;align-items:center}
+.sw{width:14px;height:14px;border-radius:2px;flex:none}
+.back{align-self:start;background:none;border:1px solid var(--line);border-radius:3px;padding:3px 10px;cursor:pointer;font-size:12.5px}
+.scorebar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.scorebar i{display:block;height:100%}
+
+/* разделы */
+section.block{padding-block:56px 8px}
+.head{display:grid;gap:10px;margin-bottom:22px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px 32px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:18px;min-width:0}
+.note{font-size:13px;color:var(--muted)}
+svg text{fill:var(--muted);font:11.5px var(--body)}
+svg .ink{fill:var(--ink)}
+.scroll{overflow-x:auto}
+
+/* таблица участков */
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-weight:600;font-size:12px;color:var(--muted)}
+td.c{text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:color-mix(in srgb,var(--lotus) 7%,transparent)}
+.bar{display:inline-block;height:9px;border-radius:2px;vertical-align:middle;background:var(--lotus)}
+
+/* калькулятор */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px}
+@media (max-width:900px){.calc{grid-template-columns:1fr}}
+.inputs{display:grid;gap:12px}
+.inp{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center}
+.inp label{font-size:13.5px}
+.inp output{font:600 14px var(--mono)}
+.inp input{grid-column:1/-1;width:100%;accent-color:var(--lotus)}
+.inp small{grid-column:1/-1;color:var(--muted);font-size:12px}
+.factors{display:grid;gap:8px}
+.factor{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:start}
+.factor input{margin-top:4px;accent-color:var(--lotus)}
+.factor b{font-weight:600}
+.factor .v{font:600 14px var(--mono)}
+.factor p{grid-column:2/-1;font-size:12.5px;color:var(--muted)}
+.formula{font:13px/1.7 var(--mono);background:var(--bg);padding:12px 14px;border-radius:3px;overflow-x:auto;white-space:nowrap}
+.big{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.big div{padding:12px;border:1px solid var(--line);border-radius:3px}
+.big b{display:block;font:600 26px/1.1 var(--mono)}
+.big span{font-size:12px;color:var(--muted)}
+.big .e{border-color:var(--lotus)}
+.big .e b{color:var(--lotus)}
+@media (max-width:520px){.big{grid-template-columns:1fr}}
+
+/* выводы */
+.findings{display:grid;gap:16px;counter-reset:f}
+.finding{display:grid;grid-template-columns:auto 1fr;gap:4px 16px}
+.finding::before{counter-increment:f;content:counter(f);grid-row:span 2;font:28px/1 var(--display);color:var(--lotus);min-width:1.2em}
+.finding p{color:var(--muted);max-width:75ch}
+ol.src{padding-left:20px;display:grid;gap:6px;font-size:13.5px;max-width:90ch}
+footer{padding-block:40px;color:var(--muted);font-size:12.5px}
+
+/* просмотр фото */
+#lb{position:fixed;inset:0;z-index:2000;background:rgb(8 12 22 / .94);display:grid;grid-template-rows:1fr auto;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+#lb img{max-width:100%;max-height:100%;object-fit:contain;margin:auto;display:block;min-height:0}
+#lb .imgbox{min-height:0;display:flex}
+#lb .cap{color:#E6ECF5;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-top:10px;font-size:14px}
+#lb .cap small{color:#A6B4CA}
+#lb button{background:rgb(255 255 255 / .1);border:1px solid rgb(255 255 255 / .25);color:#fff;border-radius:3px;padding:6px 14px;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.thumbs img{transition:transform .25s}.thumbs button:hover img{transform:scale(1.05)}}
+
+/* телефон: подписи графиков крупнее в единицах рисунка, таблица обустройства — карточками */
+.swipe{display:none}
+@media (max-width:600px){
+  body{font-size:14.5px}
+  section.block{padding-block:40px 4px}
+  .panel{padding:14px}
+  #panel{padding:14px}
+  #map{height:58vh;min-height:360px}
+  .swipe{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  #profSvg,#ndviSvg{min-width:720px!important}
+  #profSvg text,#ndviSvg text{font-size:16px}
+  #climCharts svg text{font-size:15px!important}
+  #wpTable th:first-child,#wpTable td:first-child{position:sticky;left:0;background:var(--paper);z-index:1;box-shadow:1px 0 0 var(--line)}
+  #mcTable thead{display:none}
+  #mcTable tr{display:grid;grid-template-columns:auto auto 1fr;gap:4px 14px;padding:12px 0;border-bottom:1px solid var(--line);cursor:default}
+  #mcTable td{border:0;padding:0;min-width:0!important}
+  #mcTable td:first-child,#mcTable td.note,#mcTable td:last-child{grid-column:1/-1}
+  #mcTable td.c{text-align:left}
+  #mcTable td.c::before{content:attr(data-label) " ";color:var(--muted);font-family:var(--body)}
+  #mcTable td:last-child:empty{display:none}
+  #lb .cap{font-size:13px}
+  #lb button{padding:8px 12px}
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Организация экологического туризма и заповедное дело · личное задание</div>
+    <h1>Экотропа у озера Круглое</h1>
+    <p class="lede">Электронная карта выезда 9 октября 2026 года и расчёт допустимой нагрузки на тропу. Основа — бланк 1 группы ПР-241 (9 участков), фотографии с координатами и данные спутников. Щёлкните точку на карте, чтобы открыть её фото и запись бланка.</p>
+    <div class="meta"><span>Волго-Ахтубинская пойма, г. Волжский</span><span>Группа ПР-241</span><span>17 °C, ясно</span></div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="mapzone" id="karta">
+    <div id="map" role="region" aria-label="Карта тропы"></div>
+    <aside id="panel" aria-live="polite"></aside>
+  </div>
+</div>
+
+<section class="block" id="profil"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Тропа в разрезе</div>
+    <h2>Через что проходит маршрут</h2>
+    <p class="lede" id="profLede"></p>
+  </div>
+  <div class="panel"><p class="swipe">Рисунок шире экрана — листайте вбок →</p><div class="scroll"><svg id="profSvg" viewBox="0 0 1000 300" style="min-width:640px;width:100%;display:block" role="img" aria-label="Профиль высот и типы растительности вдоль тропы"></svg></div>
+  <p class="note" style="margin-top:8px">Наведите на профиль или коснитесь его — точка на карте покажет это место. Высоты — Copernicus DEM GLO-30 (модель поверхности: над лесом в неё входят кроны), сглажены по 40 м. Полоса снизу — типы растительности из сезонной карты Sentinel-2 (2025 год, 46 снимков, пиксель 10 м).</p></div>
+</div></section>
+
+<section class="block" id="uchastki"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Бланк 1 в числах</div>
+    <h2>Какие участки нарушены сильнее</h2>
+    <p class="lede">Шесть признаков бланка переведены в баллы 0–3 и сведены в индекс нарушенности (0 — нет следов, 1 — максимум по всем признакам). Веса признаков неизвестны, поэтому расчёт повторён при 20 000 случайных наборах весов: столбец «в тройке худших» показывает, как часто участок попадал туда при любом мнении о том, что важнее.</p>
+  </div>
+  <div class="panel scroll"><p class="swipe">Таблица шире экрана — листайте вбок →</p><table id="wpTable"></table></div>
+  <p class="note" style="margin-top:10px" id="mcNote"></p>
+</div></section>
+
+<section class="block" id="emkost"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Рекреационная ёмкость · метод Cifuentes (1992)</div>
+    <h2>Сколько людей тропа выдержит за день</h2>
+    <p class="lede">Расчёт идёт в три ступени. Физическая ёмкость — сколько групп поместится на тропе и сколько раз за день её можно пройти. Реальная — физическая, уменьшенная поправками на погоду, почву, огонь и птиц. Действующая — реальная, умноженная на долю нужного обустройства, которое на тропе уже есть. Все поправки посчитаны из наших данных; параметры можно двигать.</p>
+  </div>
+  <div class="calc">
+    <div class="panel inputs" id="inputs"></div>
+    <div class="panel" style="display:grid;gap:16px;align-content:start">
+      <div class="big" id="bigNums"></div>
+      <div class="formula" id="formula"></div>
+      <svg id="waterfall" viewBox="0 0 560 210" style="width:100%" role="img" aria-label="Ступени расчёта ёмкости"></svg>
+      <div><h3 style="margin-bottom:6px">Какая поправка сильнее всего ограничивает тропу</h3><svg id="tornado" viewBox="0 0 560 200" style="width:100%" role="img" aria-label="Чувствительность к поправкам"></svg></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:22px"><h3 style="margin-bottom:6px">Поправочные коэффициенты</h3><p class="note">Каждый уменьшает ёмкость в (1 − Cf) раз. Снимите галочку, чтобы увидеть ёмкость без этого ограничения.</p><div class="factors" id="factors"></div></div>
+</div></section>
+
+<section class="block" id="klimat"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Погода за 10 сезонов · реанализ ERA5, 2016–2025</div>
+    <h2>Огонь, зной и дождь в часы работы тропы</h2>
+    <p class="lede" id="climLede"></p>
+  </div>
+  <div class="grid2" id="climCharts"></div>
+</div></section>
+
+<section class="block" id="sezon"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Сезон тропы из космоса</div>
+    <h2>Когда водить экскурсии</h2>
+    <p class="lede" id="seasonLede"></p>
+  </div>
+  <div class="panel"><p class="swipe">Рисунок шире экрана — листайте вбок →</p><div class="scroll"><svg id="ndviSvg" viewBox="0 0 1000 340" style="min-width:640px;width:100%;display:block" role="img" aria-label="Сезонный ход NDVI типов растительности вдоль тропы"></svg></div></div>
+</div></section>
+
+<section class="block" id="infra"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Обустройство · бланк против фотографий</div>
+    <h2>Что на тропе уже есть</h2>
+    <p class="lede">В бланке на всех девяти участках записано: скамеек, урн, аншлагов и настилов нет. Фотографии группы нашли больше: четыре аншлага, туалеты, будку охраны, мангалы, помосты и контейнер. Они стоят между точками бланка, поэтому в бланк не попали. Доля имеющегося от нужного — это множитель обустройства в расчёте ёмкости.</p>
+  </div>
+  <div class="panel scroll"><table id="mcTable"></table></div>
+</div></section>
+
+<section class="block" id="vyvody"><div class="wrap">
+  <div class="head"><div class="eyebrow">Итог</div><h2>Выводы и предложения</h2></div>
+  <div class="findings" id="findings"></div>
+</div></section>
+
+<section class="block" id="metody"><div class="wrap">
+  <div class="head"><div class="eyebrow">Как получены числа</div><h2>Данные, методы, ограничения</h2></div>
+  <div class="grid2">
+    <div class="panel"><h3 style="margin-bottom:10px">Данные и методы</h3><ol class="src" id="methods"></ol></div>
+    <div class="panel"><h3 style="margin-bottom:10px">Ограничения</h3><ol class="src" id="limits"></ol></div>
+  </div>
+  <div class="panel" style="margin-top:22px"><h3 style="margin-bottom:10px">Источники</h3><ol class="src">
+    <li>Cifuentes M. Determinación de capacidad de carga turística en áreas protegidas. Turrialba: CATIE, 1992. 28 p.</li>
+    <li>Казанская Н. С., Ланина В. В., Марфенин Н. Н. Рекреационные леса. М.: Лесная промышленность, 1977.</li>
+    <li>Нестеров В. Г. Горимость леса и методы её определения. М.; Л.: Гослесбумиздат, 1949.</li>
+    <li>Hersbach H. et al. The ERA5 global reanalysis // Quarterly Journal of the Royal Meteorological Society. 2020. Vol. 146. P. 1999–2049. Доступ — Open-Meteo Historical Weather API.</li>
+    <li>Copernicus DEM GLO-30. European Space Agency, 2021. Доступ — Microsoft Planetary Computer.</li>
+    <li>Sentinel-2 L2A, Copernicus / ESA; сезон 2025 обработан собственным приложением «Анализатор растительности по спутнику».</li>
+    <li>Снимок высокого разрешения — Esri World Imagery (Esri, Maxar, Earthstar Geographics).</li>
+  </ol></div>
+</div></section>
+
+<footer><div class="wrap">Группа ПР-241 · Волжский филиал ВолГУ · октябрь 2026 · карта и расчёты собраны из бланка 1, 142 фотографий выезда и открытых спутниковых данных</div></footer>
+
+<div id="lb" hidden role="dialog" aria-modal="true" aria-label="Просмотр фото">
+  <div class="imgbox"><img id="lbImg" alt=""></div>
+  <div class="cap"><div><div id="lbCap"></div><small id="lbMeta"></small></div>
+    <div style="display:flex;gap:8px"><button id="lbPrev" type="button">← Назад</button><button id="lbNext" type="button">Вперёд →</button><button id="lbClose" type="button">Закрыть</button></div></div>
+</div>
+
+<script src="lib/leaflet.js"></script>
+<script src="data.js"></script>
+<script>
+const D = window.TRAIL;
+const $ = s => document.querySelector(s);
+const fmt = (x, d = 0) => Number(x).toLocaleString('ru-RU', {minimumFractionDigits: d, maximumFractionDigits: d});
+const narrow = () => matchMedia('(max-width:600px)').matches;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const svgNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(svgNS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c])); }
+
+const TYPE = Object.fromEntries(D.types.map(t => [t.id, t]));
+const WPS = D.wps;
+const STAGE = r => r < .2 ? 'I' : r < .4 ? 'II' : r < .6 ? 'III' : r < .8 ? 'IV' : 'V';
+const rdiColor = r => r < .4 ? css('--good') : r < .6 ? css('--warn') : css('--bad');
+const GROUP_VERDICT = {'WP-04': 'обустроить в первую очередь', 'WP-05': 'обустроить в первую очередь', 'WP-02': 'обустроить в первую очередь',
+  'WP-09': 'можно без вмешательства', 'WP-08': 'можно без вмешательства', 'WP-07': 'можно без вмешательства'};
+const CRIT_TXT = {'вытаптывание': 'Вытапт.', 'стихийные тропы': 'Стихийн. тропы', 'мусор': 'Мусор', 'костровища': 'Костровища', 'берег': 'Берег', 'ширина тропы': 'Ширина'};
+
+/* ---------------- фото и просмотр ---------------- */
+const PH = Object.fromEntries(D.photos.map(p => [p.id, p]));
+let lbList = [], lbI = 0;
+function openLB(list, i) { lbList = list; lbI = i; showLB(); $('#lb').hidden = false; $('#lbClose').focus(); }
+function showLB() {
+  const p = PH[lbList[lbI]];
+  $('#lbImg').src = 'photos/' + p.id + '.jpg';
+  $('#lbImg').alt = p.cap;
+  $('#lbCap').textContent = p.cap;
+  $('#lbMeta').textContent = `участок ${p.wp} · ${lbI + 1} из ${lbList.length}`;
+}
+$('#lbPrev').onclick = () => { lbI = (lbI - 1 + lbList.length) % lbList.length; showLB(); };
+$('#lbNext').onclick = () => { lbI = (lbI + 1) % lbList.length; showLB(); };
+$('#lbClose').onclick = () => { $('#lb').hidden = true; };
+// листание фото пальцем
+let tx = null;
+$('#lb').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive: true});
+$('#lb').addEventListener('touchend', e => {
+  if (tx === null) return;
+  const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if (Math.abs(dx) > 50) (dx < 0 ? $('#lbNext') : $('#lbPrev')).click();
+});
+$('#lb').addEventListener('click', e => { if (e.target.id === 'lb' || e.target.classList.contains('imgbox')) $('#lb').hidden = true; });
+document.addEventListener('keydown', e => {
+  if ($('#lb').hidden) return;
+  if (e.key === 'Escape') $('#lb').hidden = true;
+  if (e.key === 'ArrowRight') $('#lbNext').click();
+  if (e.key === 'ArrowLeft') $('#lbPrev').click();
+});
+function thumbs(ids) {
+  return `<div class="thumbs">${ids.map((id, i) => `<button type="button" data-ids="${ids.join(',')}" data-i="${i}" title="${esc(PH[id].cap)}"><img loading="lazy" src="photos/${id}_t.jpg" alt="${esc(PH[id].cap)}"></button>`).join('')}</div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('.thumbs button');
+  if (b) openLB(b.dataset.ids.split(','), +b.dataset.i);
+});
+
+/* ---------------- шапка ---------------- */
+$('#stats').innerHTML = [
+  [fmt(D.route_len / 1000, 2) + ' км', 'маршрут по GPS'],
+  [D.time_total_min + ' мин', `в пути, из них ${D.moving_min} в движении`],
+  ['9', 'участков бланка 1'],
+  [D.photos.length, 'фото на карте'],
+  ['<span id="eccHead">—</span>', 'человек в день — допустимо', 'hl'],
+].map(([b, s, c]) => `<div class="stat ${c || ''}"><b>${b}</b><span>${s}</span></div>`).join('');
+
+/* ---------------- карта ---------------- */
+const map = L.map('map', {zoomSnap: .25, minZoom: 14, maxZoom: 19, maxBounds: L.latLngBounds(D.layers.esri).pad(.15)});
+map.fitBounds(L.latLngBounds(D.route.map(r => [r[0], r[1]])).pad(.08));
+map.attributionControl.setPrefix(false);
+const bases = {
+  esri: L.imageOverlay('layers/esri_park.jpg', D.layers.esri, {attribution: 'Снимок: Esri World Imagery'}),
+  s2: L.imageOverlay('layers/s2_summer.jpg', D.layers.s2, {attribution: 'Sentinel-2, лето 2025'}),
+};
+const vegLayer = L.imageOverlay('layers/veg_types.png', D.layers.veg, {opacity: 0, attribution: 'Типы: сезон Sentinel-2 2025'});
+bases.esri.addTo(map); vegLayer.addTo(map);
+const roiLayer = L.geoJSON(D.roi, {style: {color: '#fff', weight: 1.5, dashArray: '5 5', fill: false, opacity: .8}}).addTo(map);
+
+// маршрут: по типам растительности или по нарушенности участков
+const routeLayer = L.layerGroup().addTo(map);
+let routeMode = 'veg';
+function drawRoute() {
+  routeLayer.clearLayers();
+  const P = D.profile;
+  const key = i => routeMode === 'veg' ? P[i][2] : wpAt(P[i][0]).id;
+  const color = k => routeMode === 'veg' ? TYPE[k].color : rdiColor(WPS.find(w => w.id === k).rdi);
+  L.polyline(P.map(p => [p[4], p[5]]), {color: '#111', weight: 9, opacity: .55}).addTo(routeLayer);
+  let s = 0;
+  for (let i = 1; i <= P.length; i++) {
+    if (i === P.length || key(i) !== key(s)) {
+      const pts = P.slice(s, Math.min(i + 1, P.length)).map(p => [p[4], p[5]]);
+      const k = key(s);
+      L.polyline(pts, {color: color(k), weight: 5.5, opacity: 1})
+        .bindTooltip(routeMode === 'veg' ? TYPE[k].name : `${k}: индекс ${fmt(WPS.find(w => w.id === k).rdi, 2)}`, {sticky: true}).addTo(routeLayer);
+      s = i;
+    }
+  }
+}
+function wpAt(d) { return WPS.reduce((a, w) => Math.abs(w.dist - d) < Math.abs(a.dist - d) ? w : a); }
+
+// фото: точки съёмки, снимки с одного места — одним значком
+const photoLayer = L.layerGroup().addTo(map);
+const spots = {};
+D.photos.forEach(p => { const k = p.lat.toFixed(5) + ',' + p.lon.toFixed(5); (spots[k] ||= []).push(p.id); });
+Object.values(spots).forEach(ids => {
+  const p = PH[ids[0]];
+  const own = ids.every(id => PH[id].src === 'свои');
+  const icon = L.divIcon({className: '', html: `<div class="camicon ${own ? 'own' : ''}">${ids.length}</div>`, iconSize: [20, 20]});
+  L.marker([p.lat, p.lon], {icon, zIndexOffset: -100, keyboard: true, title: p.cap})
+    .bindTooltip(`${esc(p.cap)}${ids.length > 1 ? ` и ещё ${ids.length - 1}` : ''}`)
+    .on('click', () => { showSpot(ids); openLB(ids, 0); }).addTo(photoLayer);
+});
+
+// участки бланка
+const wpMarkers = {};
+const wpLayer = L.layerGroup().addTo(map);
+WPS.forEach(w => {
+  const icon = L.divIcon({className: '', html: `<div class="wpicon" style="background:${rdiColor(w.rdi)}">${w.id.slice(3)}</div>`, iconSize: [30, 30]});
+  wpMarkers[w.id] = L.marker([w.lat, w.lon], {icon, zIndexOffset: 500, keyboard: true, title: w.id})
+    .bindTooltip(`${w.id} · ${w.landscape} · индекс ${fmt(w.rdi, 2)}`).on('click', () => { showWP(w.id); if (stacked()) $('#panel').scrollIntoView({behavior: 'smooth', block: 'start'}); }).addTo(wpLayer);
+});
+const cursor = L.circleMarker([0, 0], {radius: 8, color: '#fff', weight: 3, fillColor: css('--lotus'), fillOpacity: 1});
+
+// своя панель слоёв
+const Ctl = L.Control.extend({options: {position: 'topright'}, onAdd() {
+  const d = L.DomUtil.create('details', 'layers'); d.open = window.innerWidth > 700;
+  d.innerHTML = `<summary>Слои карты</summary>
+    <div class="eyebrow">Подложка</div>
+    <label><input type="radio" name="base" value="esri" checked id="bEsri"> Снимок высокого разрешения</label>
+    <label><input type="radio" name="base" value="s2" id="bS2"> Sentinel-2, лето 2025</label>
+    <div class="eyebrow">Типы растительности</div>
+    <input type="range" min="0" max="1" step=".05" value="0" id="vegOp" aria-label="Прозрачность слоя типов растительности">
+    <div class="eyebrow">Цвет маршрута</div>
+    <label><input type="radio" name="rmode" value="veg" checked id="rVeg"> по типам растительности</label>
+    <label><input type="radio" name="rmode" value="rdi" id="rRdi"> по нарушенности участков</label>
+    <div class="eyebrow">Объекты</div>
+    <label><input type="checkbox" checked id="oWp"> Участки бланка 1</label>
+    <label><input type="checkbox" checked id="oPh"> Места съёмки фото</label>
+    <label><input type="checkbox" checked id="oRoi"> Граница области анализа</label>`;
+  L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+  return d;
+}});
+map.addControl(new Ctl());
+document.querySelectorAll('input[name=base]').forEach(r => r.onchange = () => {
+  Object.values(bases).forEach(b => map.removeLayer(b)); bases[r.value].addTo(map); bases[r.value].bringToBack();
+});
+$('#vegOp').oninput = e => { vegLayer.setOpacity(+e.target.value); if (+e.target.value > 0 && panelMode === 'home') showHome(); };
+document.querySelectorAll('input[name=rmode]').forEach(r => r.onchange = () => { routeMode = r.value; drawRoute(); });
+const tog = (id, layer) => $(id).onchange = e => e.target.checked ? layer.addTo(map) : map.removeLayer(layer);
+tog('#oWp', wpLayer); tog('#oPh', photoLayer); tog('#oRoi', roiLayer);
+L.control.scale({imperial: false, position: 'bottomleft'}).addTo(map);
+drawRoute();
+
+/* ---------------- панель ---------------- */
+let panelMode = 'home';
+// на узком экране панель стоит под картой: щелчок по участку листает к ней, «назад» — обратно к карте
+const stacked = () => matchMedia('(max-width:900px)').matches;
+function backHome() { showHome(); if (stacked()) $('#karta').scrollIntoView({behavior: 'smooth', block: 'start'}); }
+function legendTypes() {
+  return `<div class="legend">${D.types.filter(t => t.route_m > 0).sort((a, b) => b.route_m - a.route_m)
+    .map(t => `<div><span class="sw" style="background:${t.color}"></span><span style="flex:1">${esc(t.name)}</span><span class="num">${fmt(t.route_m)} м</span></div>`).join('')}</div>`;
+}
+function showHome() {
+  panelMode = 'home';
+  Object.values(wpMarkers).forEach(m => m.getElement()?.firstChild?.classList.remove('sel'));
+  $('#panel').innerHTML = `<div class="pcard">
+    <div class="eyebrow">Маршрут группы ПР-241 · 09.10.2026</div>
+    <h3>Петля ${fmt(D.route_len / 1000, 2)} км от спортплощадки через лес и берег озера к источнику</h3>
+    <p class="note">Цифры в кружках — участки бланка 1, цвет — нарушенность: <span style="color:var(--good)">●</span> слабая, <span style="color:var(--warn)">●</span> средняя, <span style="color:var(--bad)">●</span> сильная. Значки с числом — места съёмки фото: синие — камера группы, тёмные — телефон; число — сколько снимков сделано на этом месте.</p>
+    <div class="eyebrow" style="margin-top:6px">Под тропой: длина по типам растительности</div>
+    ${legendTypes()}
+    <p class="note">Тип «${esc(TYPE[-1].name.split(':')[0])}» — серый. Слой типов включается ползунком в «Слоях карты».</p>
+    <div class="eyebrow" style="margin-top:6px">Самое интересное на маршруте</div>
+    ${thumbs(['TC_00075', 'TC_00087', 'TC_00103', 'TC_00082', 'TC_00070', 'TC_00142'])}
+  </div>`;
+}
+function showWP(id) {
+  panelMode = 'wp';
+  const w = WPS.find(x => x.id === id);
+  Object.entries(wpMarkers).forEach(([k, m]) => m.getElement()?.firstChild?.classList.toggle('sel', k === id));
+  const ph = D.photos.filter(p => p.wp === id).map(p => p.id);
+  const t = TYPE[w.veg];
+  const chips = [];
+  if (w.scores['вытаптывание'] === 3) chips.push(['bad', 'сильное вытаптывание']);
+  if (w.scores['мусор'] === 3) chips.push(['bad', 'много мусора']);
+  if (w.fires_n) chips.push(['warn', `костровищ: ${w.fires_n}`]);
+  if (w.scores['берег']) chips.push(['warn', 'промоины на берегу']);
+  if (GROUP_VERDICT[id]) chips.push([GROUP_VERDICT[id].startsWith('можно') ? 'good' : 'bad', 'вывод группы: ' + GROUP_VERDICT[id]]);
+  $('#panel').innerHTML = `<div class="pcard">
+    <button class="back" type="button" id="backBtn">← Весь маршрут</button>
+    <div class="eyebrow">Участок бланка 1 · ${w.time} · ${fmt(w.dist)} м от старта</div>
+    <h3>${id}: ${esc(w.landscape === 'не отмечен' ? 'тип ландшафта не отмечен' : w.landscape)}</h3>
+    <div class="chips">${chips.map(([c, s]) => `<span class="chip ${c}">${s}</span>`).join('')}</div>
+    <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>Индекс нарушенности · стадия ${STAGE(w.rdi)}</span><span class="num">${fmt(w.rdi, 2)}</span></div>
+      <div class="scorebar"><i style="width:${w.rdi * 100}%;background:${rdiColor(w.rdi)}"></i></div>
+      <p class="note" style="margin-top:4px">В тройке худших при ${fmt(w.p_top3 * 100)} % наборов весов; место ${w.rank_med} из 9 (обычно ${w.rank_p10}–${w.rank_p90}).</p></div>
+    <dl class="kv">
+      <dt>Ширина тропы</dt><dd>${w.width_m ? fmt(w.width_m, 1) + ' м' : 'не замерялась'}</dd>
+      <dt>Стихийные тропы</dt><dd>${esc(w.spont || '—')}</dd>
+      <dt>Мусор</dt><dd>${esc(w.litter)}</dd>
+      <dt>Костровища</dt><dd>${esc(w.fires)}</dd>
+      <dt>Вытаптывание</dt><dd>${esc(w.trampling)}</dd>
+      <dt>Берег</dt><dd>${esc(w.shore)}</dd>
+      <dt>Инфраструктура</dt><dd>${esc(w.infra)}</dd>
+      ${w.note ? `<dt>Примечание</dt><dd>${esc(w.note)}</dd>` : ''}
+      <dt>Со спутника</dt><dd><span class="sw" style="display:inline-block;vertical-align:-2px;background:${t.color}"></span> ${esc(t.name)}</dd>
+      <dt>Участок тропы</dt><dd>${fmt(w.section_m)} м</dd>
+    </dl>
+    <div class="eyebrow">Фото участка · ${ph.length}</div>
+    ${thumbs(ph)}
+  </div>`;
+  $('#backBtn').onclick = backHome;
+}
+function showSpot(ids) {
+  panelMode = 'spot';
+  const p = PH[ids[0]];
+  $('#panel').innerHTML = `<div class="pcard"><button class="back" type="button" id="backBtn">← Весь маршрут</button>
+    <div class="eyebrow">Место съёмки · участок ${p.wp}</div><h3>${esc(p.cap)}</h3>
+    <p class="note">${p.src === 'группа' ? `Координаты из GPS камеры, точность ${fmt(p.acc, 1)} м.` : 'Фото с телефона; место привязано к маршруту по времени съёмки.'}</p>
+    ${thumbs(ids)}<button class="back" type="button" id="wpBtn">Открыть участок ${p.wp}</button></div>`;
+  $('#backBtn').onclick = backHome;
+  $('#wpBtn').onclick = () => showWP(p.wp);
+}
+showHome();
+
+/* ---------------- профиль ---------------- */
+(function profile() {
+  const P = D.profile, svg = $('#profSvg');
+  const X0 = 46, X1 = 984, Y0 = 20, Y1 = 210, B0 = 222, B1 = 244;
+  const L_ = P[P.length - 1][0];
+  const zmin = Math.floor(D.elev_min / 5) * 5, zmax = Math.ceil(D.elev_max / 5) * 5;
+  const x = d => X0 + d / L_ * (X1 - X0), y = z => Y1 - (z - zmin) / (zmax - zmin) * (Y1 - Y0);
+  for (let z = zmin; z <= zmax; z += 10) {
+    el('line', {x1: X0, x2: X1, y1: y(z), y2: y(z), stroke: css('--line'), 'stroke-width': 1}, svg);
+    el('text', {x: X0 - 6, y: y(z) + 4, 'text-anchor': 'end'}, svg).textContent = z + ' м';
+  }
+  const area = `M${x(0)},${Y1} ` + P.map(p => `L${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ') + ` L${x(L_)},${Y1} Z`;
+  el('path', {d: area, fill: css('--sand'), 'fill-opacity': .22}, svg);
+  el('path', {d: 'M' + P.map(p => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' L'), fill: 'none', stroke: css('--ink'), 'stroke-width': 1.6}, svg);
+  for (let i = 0; i < P.length - 1; i++)
+    el('rect', {x: x(P[i][0]), y: B0, width: Math.max(.5, x(P[i + 1][0]) - x(P[i][0]) + .3), height: B1 - B0, fill: TYPE[P[i][2]].color}, svg);
+  WPS.forEach(w => {
+    el('line', {x1: x(w.dist), x2: x(w.dist), y1: Y0, y2: B1, stroke: css('--ink'), 'stroke-opacity': .35, 'stroke-dasharray': '2 3'}, svg);
+    el('circle', {cx: x(w.dist), cy: Y0 - 2, r: 9, fill: rdiColor(w.rdi)}, svg);
+    const t = el('text', {x: x(w.dist), y: Y0 + 2, 'text-anchor': 'middle', style: 'fill:#fff;font:600 10px var(--mono)'}, svg); t.textContent = w.id.slice(3);
+  });
+  for (let km = 0; km <= L_ / 1000; km++) el('text', {x: x(km * 1000), y: 264, 'text-anchor': 'middle'}, svg).textContent = km + ' км';
+  const vline = el('line', {y1: Y0, y2: B1, stroke: css('--lotus'), 'stroke-width': 1.5, visibility: 'hidden'}, svg);
+  const tip = el('text', {y: 290, 'text-anchor': 'middle', class: 'ink', visibility: 'hidden'}, svg);
+  svg.addEventListener('pointermove', e => {
+    const r = svg.getBoundingClientRect(), sx = (e.clientX - r.left) / r.width * 1000;
+    const d = Math.max(0, Math.min(L_, (sx - X0) / (X1 - X0) * L_));
+    const p = P.reduce((a, b) => Math.abs(b[0] - d) < Math.abs(a[0] - d) ? b : a);
+    vline.setAttribute('x1', x(p[0])); vline.setAttribute('x2', x(p[0])); vline.setAttribute('visibility', 'visible');
+    tip.setAttribute('x', Math.max(180, Math.min(820, x(p[0])))); tip.setAttribute('visibility', 'visible');
+    tip.textContent = `${fmt(p[0])} м · ${fmt(p[1], 1)} м над уровнем моря · ${TYPE[p[2]].name}`;
+    cursor.setLatLng([p[4], p[5]]).addTo(map);
+  });
+  svg.addEventListener('pointerleave', () => { vline.setAttribute('visibility', 'hidden'); tip.setAttribute('visibility', 'hidden'); map.removeLayer(cursor); });
+  const veg = D.types.filter(t => t.id >= 0 && t.route_m > 25).length;
+  $('#profLede').textContent = `За ${fmt(D.route_len / 1000, 1)} км тропа пересекает ${veg} из 10 типов растительности парка и меняет тип ${D.switches} раз — в среднем каждые ${fmt(D.route_len / D.switches)} м. Индекс разнообразия Шеннона по длине — ${fmt(D.shannon, 2)} при максимуме ${fmt(D.shannon_max, 2)} (выровненность ${fmt(D.shannon / D.shannon_max * 100)} %): ни один тип не занимает тропу целиком, а это и есть познавательный ресурс экотропы — степь, лес, тростник и озеро на одной петле.`;
+})();
+
+/* ---------------- таблица участков ---------------- */
+(function wpTable() {
+  const crit = D.crit;
+  const head = `<thead><tr><th>Участок</th>${crit.map(c => `<th style="text-align:center">${CRIT_TXT[c]}</th>`).join('')}<th>Индекс</th><th>Стадия</th><th>В тройке худших</th><th>Вывод группы на месте</th></tr></thead>`;
+  const rows = [...WPS].sort((a, b) => b.rdi - a.rdi).map(w => `<tr data-wp="${w.id}"><td><b>${w.id}</b><br><span class="note">${esc(w.landscape)}</span></td>
+    ${crit.map(c => { const v = w.scores[c]; return v == null ? '<td class="c note">—</td>' : `<td class="c" style="background:color-mix(in srgb,var(--bad) ${v / 3 * 55}%,transparent)">${fmt(v, Number.isInteger(v) ? 0 : 1)}${w.uncertain.includes(c) ? '?' : ''}</td>`; }).join('')}
+    <td class="c"><b>${fmt(w.rdi, 2)}</b></td><td class="c">${STAGE(w.rdi)}</td>
+    <td class="num" style="white-space:nowrap"><span class="bar" style="width:${w.p_top3 * 70}px"></span> ${fmt(w.p_top3 * 100)} %</td>
+    <td class="note">${GROUP_VERDICT[w.id] || ''}</td></tr>`).join('');
+  $('#wpTable').innerHTML = head + '<tbody>' + rows + '</tbody>';
+  $('#wpTable').addEventListener('click', e => { const tr = e.target.closest('tr[data-wp]'); if (tr) { showWP(tr.dataset.wp); $('#karta').scrollIntoView({behavior: 'smooth'}); map.flyTo(wpMarkers[tr.dataset.wp].getLatLng(), 17.5); } });
+  const top = [...WPS].sort((a, b) => b.p_top3 - a.p_top3).slice(0, 3);
+  const low = [...WPS].sort((a, b) => a.rdi - b.rdi).slice(0, 3);
+  $('#mcNote').innerHTML = `Расчёт подтверждает выводы группы, сделанные на месте глазом: тройка худших по частоте — ${top.map(w => `<b>${w.id}</b> (${fmt(w.p_top3 * 100)} %)`).join(', ')}, тройка лучших по индексу — ${low.map(w => w.id).join(', ')}. Это те же участки, что группа записала в бланк как «требующие первоочередного обустройства» и «пригодные без вмешательства». Баллы: вытаптывание нет/слабо/средне/сильно = 0–3; стихийные тропы — число, не больше 3; мусор единичный/умеренный/значительный = 1–3; костровища 1–2 шт. = 2, 3 и больше = 3; промоины = 2, промоины и вытоптанный берег = 3; ширина тропы — на сколько метров шире 1,5 м (ориентир для пешеходной экотропы), не больше 3. Стадия I–V — условная, по индексу через каждые 0,2, по аналогии со стадиями рекреационной дигрессии (Казанская и др., 1977). «?» — неразборчивая запись в бланке.`;
+})();
+
+/* ---------------- ёмкость ---------------- */
+const C = D.climate, CF = D.cif, Lr = D.route_len;
+const sec = id => WPS.find(w => w.id === id).section_m;
+const MC_ITEMS = [
+  ['Аншлаги и информационные стенды', 9, 4, 'по одному на участок; есть стенд парка со схемой эвакуации, «Купание запрещено», «Выход на лёд запрещён», «Сохраним лотосы» — все у WP-04 и WP-05; аншлаг у источника выцвел и не читается', ['TC_00070', 'TC_00075', 'TC_00069', 'TC_00138']],
+  ['Места отдыха со скамейками', 4, 2, 'одно на километр; есть помосты-столы в тополёвнике и скамейки у источника', ['IMG_20261009_105516_320', 'TC_00134']],
+  ['Урны и контейнеры', 9, 1, 'по одной на участок; есть контейнер у мангалов', ['TC_00064']],
+  ['Туалеты', 2, 1, 'у старта и на середине; есть пара будок на опушке у WP-04', ['TC_00062']],
+  ['Оборудованные места для костра', 2, 2, 'мангал-габион и мангал в тополёвнике — они уводят огонь от берега', ['TC_00058', 'TC_00064']],
+  ['Оборудованный спуск к воде', 1, 0, 'сейчас к воде ведут стихийные тропы, берег в промоинах', ['TC_00051', 'TC_00082']],
+  ['Настил на сыром участке', 1, 0, `${fmt(CF.wet_len)} м тропы идут по тростнику`, []],
+  ['Охрана', 1, 1, 'будка охраны у WP-04', ['TC_00063']],
+  ['Экскурсовод или проводник', 1, 0, 'на тропе не встречен; для экотропы обязателен', []],
+  ['Парковка', 1, 1, 'у шлагбаума, WP-03', ['TC_00046']],
+];
+const MC = MC_ITEMS.reduce((s, it) => s + Math.min(1, it[2] / it[1]), 0) / MC_ITEMS.length;
+const sp = 1;
+const FACTORS = [
+  {id: 'fire', name: 'Пожароопасность', on: true, cf: C.fire45 / C.season_days,
+   why: `В среднем ${fmt(C.fire45)} из ${C.season_days} дней сезона комплексный показатель Нестерова выше 4000 — IV–V класс пожарной опасности. В такие дни пребывание в лесах ограничивают; тропу проектируем закрытой. Сама группа отметила, что шлагбаум у WP-03 опасен при пожаре.`},
+  {id: 'erosion', name: 'Размыв берега', on: true, cf: (1.5 * sec('WP-04') + sec('WP-05') + sec('WP-07')) / Lr,
+   why: `Промоины записаны на WP-04, 05 и 07. Участок WP-04 (${fmt(sec('WP-04'))} м, берег ещё и вытоптан) — высокий риск, вес 1,5; WP-05 и WP-07 (${fmt(sec('WP-05') + sec('WP-07'))} м) — средний, вес 1. Уклоны по модели рельефа не взяты: над лесом она видит кроны.`},
+  {id: 'heat', name: 'Зной на открытых участках', on: true, cf: C.hot_h / C.open_h * (1 - CF.shade_len / Lr),
+   why: `${fmt(C.hot_h / C.open_h * 100)} % часов работы тропы жарче 30 °C. Тени от крон хватает на ${fmt(CF.shade_len / Lr * 100)} % длины (лес полностью, редкие деревья и кусты частично — по карте типов). Ограничение действует только на открытой части.`},
+  {id: 'fauna', name: 'Гнездование птиц', on: true, cf: 61 / C.season_days * CF.shore_len / Lr,
+   why: `С 15 апреля по 15 июня (61 день) прибрежные участки WP-04, 05, 07 (${fmt(CF.shore_len)} м) лучше закрывать от групп: тростник и кромка воды — места гнездования.`},
+  {id: 'wet', name: 'Переувлажнение', on: true, cf: CF.wet_len / Lr,
+   why: `${fmt(CF.wet_len)} м тропы идут по типу «тростник»: без настила там сыро большую часть сезона.`},
+  {id: 'rain', name: 'Дождь', on: true, cf: C.rain_h / C.open_h,
+   why: `В среднем ${fmt(C.rain_h)} часов из ${fmt(C.open_h)} часов работы тропы за сезон идёт дождь сильнее 0,5 мм в час.`},
+  {id: 'closed', name: 'Санитарный день', on: false, cf: 1 / 7,
+   why: 'Если тропу закрывать на один день в неделю для уборки. Сейчас парк открыт всегда, поэтому по умолчанию выключено.'},
+];
+const INPUTS = [
+  {id: 'L', name: 'Длина тропы, м', min: 1000, max: 6000, step: 5, v: Lr, why: 'по GPS-точкам маршрута группы'},
+  {id: 'G', name: 'Человек в группе', min: 5, max: 25, step: 1, v: 15, why: 'обычный размер экскурсионной группы с одним проводником'},
+  {id: 'dg', name: 'Расстояние между группами, м', min: 50, max: 800, step: 10, v: 300, why: 'чтобы группы не видели и не слышали друг друга: около 12 минут хода'},
+  {id: 'Hv', name: 'Тропа открыта, часов в день', min: 4, max: 13, step: .5, v: 9, why: 'с 9:00 до 18:00'},
+  {id: 'Tv', name: 'Время прохождения, ч', min: 1, max: 5, step: .05, v: +(D.time_total_min / 60).toFixed(2), why: `замер выезда: ${D.time_total_min} мин с остановками на 9 участках`},
+];
+const st = Object.fromEntries(INPUTS.map(i => [i.id, i.v]));
+$('#inputs').innerHTML = '<h3>Параметры</h3>' + INPUTS.map(i => `<div class="inp"><label for="in_${i.id}">${i.name}</label><output id="out_${i.id}" class="num"></output>
+  <input type="range" id="in_${i.id}" min="${i.min}" max="${i.max}" step="${i.step}" value="${i.v}"><small>${i.why}</small></div>`).join('')
+  + `<p class="note">Множитель обустройства MC = ${fmt(MC, 2)} — из таблицы «Что на тропе уже есть» ниже.</p>`;
+INPUTS.forEach(i => $('#in_' + i.id).oninput = e => { st[i.id] = +e.target.value; calc(); });
+$('#factors').innerHTML = FACTORS.map(f => `<label class="factor" for="f_${f.id}"><input type="checkbox" id="f_${f.id}" ${f.on ? 'checked' : ''}>
+  <b>${f.name}</b><span class="v">Cf = ${fmt(f.cf, 3)}</span><p>${f.why}</p></label>`).join('');
+FACTORS.forEach(f => $('#f_' + f.id).onchange = e => { f.on = e.target.checked; calc(); });
+
+function capacity(skip) {
+  const NG = Math.floor(st.L / (st.G * sp + st.dg));
+  const P = NG * st.G, NV = st.Hv / st.Tv, PCC = P * NV;
+  const mult = FACTORS.filter(f => f.on && f.id !== skip).reduce((m, f) => m * (1 - f.cf), 1);
+  const RCC = PCC * mult, ECC = RCC * MC;
+  return {NG, P, NV, PCC, RCC, ECC, mult};
+}
+function calc() {
+  INPUTS.forEach(i => $('#out_' + i.id).textContent = fmt(st[i.id], i.step < 1 ? 2 : 0));
+  const r = capacity();
+  $('#bigNums').innerHTML = `<div><b>${fmt(r.PCC)}</b><span>физическая, чел./день</span></div><div><b>${fmt(r.RCC)}</b><span>реальная, чел./день</span></div>
+    <div class="e"><b>${fmt(r.ECC)}</b><span>действующая, чел./день · ≈ ${fmt(r.ECC / st.G)} групп · ${fmt(r.ECC * C.season_days / 1000, 1)} тыс. за сезон</span></div>`;
+  $('#eccHead').textContent = fmt(r.ECC);
+  $('#formula').innerHTML = `групп на тропе = ⌊${fmt(st.L)} / (${st.G} × ${sp} м + ${st.dg} м)⌋ = ${r.NG}; людей одновременно = ${r.P}<br>
+    проходов за день = ${fmt(st.Hv, 1)} ч / ${fmt(st.Tv, 2)} ч = ${fmt(r.NV, 2)}<br>
+    PCC = ${r.P} × ${fmt(r.NV, 2)} = <b>${fmt(r.PCC)}</b><br>
+    RCC = PCC × ${FACTORS.filter(f => f.on).map(f => `(1 − ${fmt(f.cf, 3)})`).join(' × ')} = <b>${fmt(r.RCC)}</b><br>
+    ECC = RCC × MC = ${fmt(r.RCC)} × ${fmt(MC, 2)} = <b>${fmt(r.ECC)}</b> чел./день`;
+  // ступени
+  // на телефоне рисунок уже, чтобы подписи не мельчали
+  const W = narrow() ? 340 : 560, bmx = W - 90;
+  const w = $('#waterfall'); w.innerHTML = ''; w.setAttribute('viewBox', `0 0 ${W} 210`);
+  const rows = [['Физическая ёмкость', r.PCC, css('--muted')], ['Реальная: после поправок', r.RCC, css('--sand')], ['Действующая: с учётом обустройства', r.ECC, css('--lotus')]];
+  const mx = r.PCC || 1;
+  rows.forEach(([n, v, c], i) => {
+    const y = 14 + i * 64;
+    el('text', {x: 0, y, class: 'ink'}, w).textContent = n;
+    el('rect', {x: 0, y: y + 8, width: Math.max(2, v / mx * bmx), height: 30, fill: c, rx: 2}, w);
+    el('text', {x: Math.max(2, v / mx * bmx) + 8, y: y + 29, class: 'ink', style: 'font:600 14px var(--mono)'}, w).textContent = fmt(v);
+  });
+  // чувствительность: на сколько выросла бы ёмкость без поправки
+  const t = $('#tornado'); t.innerHTML = '';
+  const sens = FACTORS.filter(f => f.on).map(f => [f.name, capacity(f.id).ECC / r.ECC - 1]).sort((a, b) => b[1] - a[1]);
+  const smx = Math.max(...sens.map(s => s[1]), .01);
+  if (narrow()) {  // подпись над полосой
+    t.setAttribute('viewBox', `0 0 ${W} ${sens.length * 40 + 4}`);
+    sens.forEach(([n, v], i) => {
+      const y = i * 40, bw = Math.max(2, v / smx * (W - 70));
+      el('text', {x: 0, y: y + 13, class: 'ink'}, t).textContent = n;
+      el('rect', {x: 0, y: y + 19, width: bw, height: 14, fill: css('--lotus'), 'fill-opacity': .75, rx: 2}, t);
+      el('text', {x: bw + 6, y: y + 31}, t).textContent = '+' + fmt(v * 100) + ' %';
+    });
+    return;
+  }
+  t.setAttribute('viewBox', `0 0 560 ${sens.length * 28 + 6}`);
+  sens.forEach(([n, v], i) => {
+    const y = i * 28;
+    el('text', {x: 210, y: y + 17, 'text-anchor': 'end', class: 'ink'}, t).textContent = n;
+    el('rect', {x: 218, y: y + 5, width: Math.max(2, v / smx * 270), height: 16, fill: css('--lotus'), 'fill-opacity': .75, rx: 2}, t);
+    el('text', {x: 224 + Math.max(2, v / smx * 270), y: y + 18}, t).textContent = '+' + fmt(v * 100) + ' %';
+  });
+}
+calc();
+let wasNarrow = narrow();
+addEventListener('resize', () => { if (narrow() !== wasNarrow) { wasNarrow = narrow(); calc(); } });
+
+/* ---------------- климат ---------------- */
+(function climate() {
+  const Y = C.years;
+  const charts = [
+    ['fire45', 'Дней IV–V класса пожарной опасности', 'из 214 дней сезона', css('--bad')],
+    ['hot_h', 'Часов жарче 30 °C', 'из 1926 часов работы тропы', css('--sand')],
+    ['rain_h', 'Часов с дождём > 0,5 мм', 'из 1926 часов работы тропы', css('--water')],
+  ];
+  $('#climCharts').innerHTML = charts.map((c, i) => `<div class="panel"><h3>${c[1]}</h3><p class="note">${c[2]}; линия — среднее за 10 лет</p><svg id="cl${i}" viewBox="0 0 440 190" style="width:100%;margin-top:8px" role="img" aria-label="${c[1]} по годам"></svg></div>`).join('');
+  charts.forEach(([k, , , col], i) => {
+    const s = $('#cl' + i), mx = Math.max(...Y.map(y => y[k])) * 1.15, mean = Y.reduce((a, y) => a + y[k], 0) / Y.length;
+    const bw = 400 / Y.length;
+    Y.forEach((y, j) => {
+      const h = y[k] / mx * 140;
+      el('rect', {x: 30 + j * bw + 4, y: 160 - h, width: bw - 8, height: h, fill: col, 'fill-opacity': .8, rx: 1.5}, s);
+      el('text', {x: 30 + j * bw + bw / 2, y: 154 - h, 'text-anchor': 'middle', style: 'font:10.5px var(--mono)'}, s).textContent = y[k];
+      el('text', {x: 30 + j * bw + bw / 2, y: 178, 'text-anchor': 'middle'}, s).textContent = "'" + String(y.year).slice(2);
+    });
+    el('line', {x1: 30, x2: 430, y1: 160 - mean / mx * 140, y2: 160 - mean / mx * 140, stroke: css('--ink'), 'stroke-dasharray': '4 3'}, s);
+    el('line', {x1: 30, x2: 430, y1: 160, y2: 160, stroke: css('--line')}, s);
+  });
+  const shade = CF.shade_len / Lr;
+  $('#climLede').textContent = `Почасовые данные реанализа ERA5 в точке тропы, сезон 1 апреля — 31 октября, часы 9:00–18:00. Главное ограничение тропы — огонь: в среднем ${fmt(C.fire45)} дней из ${C.season_days} (${fmt(C.fire45 / C.season_days * 100)} %) показатель Нестерова держится в IV–V классе, в сухие 2020 и 2024 годы — ${Math.max(...C.years.map(y => y.fire45))} дней. Зной второй: ${fmt(C.hot_h / C.open_h * 100)} % рабочих часов жарче 30 °C, а в тени крон идёт только ${fmt(shade * 100)} % тропы. Дождь почти не мешает.`;
+})();
+
+/* ---------------- сезон NDVI ---------------- */
+(function ndvi() {
+  const s = $('#ndviSvg'), doys = D.doys;
+  const X0 = 50, X1 = 980, Y0 = 16, Y1 = 290, lo = -.2, hi = .9;
+  const x = d => X0 + (d - 60) / (320 - 60) * (X1 - X0), y = v => Y1 - (v - lo) / (hi - lo) * (Y1 - Y0);
+  [0, .2, .4, .6, .8].forEach(v => { el('line', {x1: X0, x2: X1, y1: y(v), y2: y(v), stroke: css('--line')}, s); el('text', {x: X0 - 8, y: y(v) + 4, 'text-anchor': 'end'}, s).textContent = fmt(v, 1); });
+  [['апр', 91], ['май', 121], ['июн', 152], ['июл', 182], ['авг', 213], ['сен', 244], ['окт', 274], ['ноя', 305]].forEach(([m, d]) => {
+    el('line', {x1: x(d), x2: x(d), y1: Y1, y2: Y1 + 5, stroke: css('--muted')}, s);
+    el('text', {x: x(d) + 4, y: Y1 + 20}, s).textContent = m;
+  });
+  const iPeak = D.route_ndvi.indexOf(Math.max(...D.route_ndvi)), iCon = D.contrast.indexOf(Math.max(...D.contrast));
+  [[iPeak, 'зелень тропы на пике'], [iCon, 'сообщества различаются сильнее всего']].forEach(([i, t]) => {
+    el('rect', {x: x(doys[i]) - 14, y: Y0, width: 28, height: Y1 - Y0, fill: css('--lotus'), 'fill-opacity': .1}, s);
+    el('text', {x: x(doys[i]) + 18, y: Y0 + 12, class: 'ink'}, s).textContent = t;
+  });
+  const line = v => 'M' + doys.map((d, i) => `${x(d).toFixed(1)},${y(v[i]).toFixed(1)}`).join(' L');
+  D.types.filter(t => t.id >= 0 && t.route_m > 25).forEach(t => el('path', {d: line(t.ndvi), fill: 'none', stroke: t.color, 'stroke-width': 1.8, 'stroke-opacity': .9}, s));
+  el('path', {d: line(D.route_ndvi), fill: 'none', stroke: css('--ink'), 'stroke-width': 3.2}, s);
+  el('text', {x: x(doys[iPeak]) + 18, y: y(D.route_ndvi[iPeak]) - 10, class: 'ink', style: 'font-weight:600'}, s).textContent = 'вся тропа в среднем';
+  const dt = d => new Date(2025, 0, d).toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'});
+  $('#seasonLede').innerHTML = `Цветные линии — средний NDVI каждого типа растительности, через который проходит тропа (2025 год, 46 снимков Sentinel-2), чёрная — тропа в среднем по длине. Зелень тропы в целом максимальна около <b>${dt(doys[iPeak])}</b>: весенние злаки и травы степи на пике. Различия между сообществами сильнее всего около <b>${dt(doys[iCon])}</b>: степь уже выгорела, а лес, тростник и прибрежная зелень ещё зелёные — экскурсовод может показать «разные миры» на одной петле. Это же время цветения лотоса. Отсюда два экскурсионных окна: май и вторая половина июля — август, утром.`;
+})();
+
+/* ---------------- обустройство ---------------- */
+$('#mcTable').innerHTML = `<thead><tr><th>Что нужно экотропе</th><th style="text-align:center">Нужно</th><th style="text-align:center">Есть</th><th>Доля</th><th>Пояснение</th><th>Фото</th></tr></thead><tbody>` +
+  MC_ITEMS.map(([n, need, have, why, ph]) => `<tr><td><b>${n}</b></td><td class="c" data-label="нужно">${need}</td><td class="c" data-label="есть">${have}</td>
+  <td class="num" style="white-space:nowrap"><span class="bar" style="width:${Math.min(1, have / need) * 60}px;background:${have >= need ? css('--good') : have ? css('--warn') : css('--bad')}"></span> ${fmt(Math.min(1, have / need) * 100)} %</td>
+  <td class="note" style="min-width:220px">${why}</td><td style="min-width:${ph.length ? 120 : 0}px">${ph.length ? thumbs(ph).replace('class="thumbs"', 'class="thumbs" style="grid-template-columns:repeat(2,56px)"') : ''}</td></tr>`).join('') +
+  `<tr><td><b>Множитель обустройства MC</b></td><td></td><td></td><td class="num"><b>${fmt(MC * 100)} %</b></td><td class="note">среднее по строкам: тропа обустроена меньше чем наполовину</td><td></td></tr></tbody>`;
+
+/* ---------------- выводы ---------------- */
+(function findings() {
+  const r = capacity();
+  const top = [...WPS].sort((a, b) => b.p_top3 - a.p_top3);
+  const F = [
+    [`Тропа выдержит около ${fmt(r.ECC)} человек в день — примерно ${fmt(r.ECC / 15)} групп по 15`, `Физически на петле поместится ${fmt(r.PCC)} человек в день, но поправки на пожароопасность, размыв берега, зной, гнездование, сырость и дождь оставляют ${fmt(r.RCC)}, а нехватка обустройства — ${fmt(r.ECC)}. За сезон это около ${fmt(r.ECC * C.season_days / 1000, 1)} тыс. посещений. Сильнее всего тропу ограничивает огонь, но на него парк не влияет. Из того, что зависит от парка, больше всего дадут обустройство (довести его до нормы — ёмкость вырастет в ${fmt(1 / MC, 1)} раза) и укреплённый спуск к воде вместо размытых берегов.`],
+    [`Берег у шлагбаума и туалета (WP-04) нарушен сильнее всего почти при любых весах признаков`, `Индекс ${fmt(top[0].rdi, 2)}, условная стадия ${STAGE(top[0].rdi)}; участок попадает в тройку худших в ${fmt(top[0].p_top3 * 100)} % вариантов весов. Рядом WP-02 у спортплощадки и WP-05 с костровищами. Расчёт совпал с выводом группы, сделанным на месте: значит, бланк работает как инструмент оценки.`],
+    [`Главный внешний риск — огонь`, `${fmt(C.fire45 / C.season_days * 100)} % дней сезона приходятся на IV–V класс пожарной опасности. Тропе нужен порядок закрытия в эти дни и проезд для пожарной техники через шлагбаум у WP-03; на берегу уже есть оборудованные мангалы, и стихийные костровища у воды (WP-04, WP-05) стоит ликвидировать.`],
+    [`Тропа ценна разнообразием: ${D.types.filter(t => t.id >= 0 && t.route_m > 25).length} типов растительности на ${fmt(D.route_len / 1000, 1)} км`, `Выровненность Шеннона ${fmt(D.shannon / D.shannon_max * 100)} %, смена сообщества в среднем каждые ${fmt(D.route_len / D.switches)} м. На маршруте — лотос (вид Красной книги, у берега стоит охранный аншлаг), тростниковые заросли, пойменный тополёвник, песчаная степь и источник с купелью и крестом. Это материал для 5–7 остановок с рассказом.`],
+    [`Опунция в степи — сигнал для дирекции парка`, `На участке ${PH['TC_00103'].wp} сфотографирован кактус-опунция, кем-то огороженный планками. Для поймы это чужеродный вид; находку стоит передать в природный парк и проверить, не расселяется ли он по пескам.`],
+    [`Лучшее время для экскурсий — май и вторая половина лета, утром`, `По сезонному ходу NDVI в мае тропа зеленее всего, а в августе сообщества различаются сильнее всего и цветёт лотос. Утро обходит зной: три четверти тропы без тени.`],
+  ];
+  $('#findings').innerHTML = F.map(([h, p]) => `<div class="finding"><h3>${h}</h3><p>${p}</p></div>`).join('');
+})();
+
+/* ---------------- методы ---------------- */
+$('#methods').innerHTML = [
+  `Маршрут — ломаная по ${D.photos.filter(p => p.src === 'группа' && p.gps).length} снимкам группы с GPS (точность до 20 м) и 9 точкам бланка; длина ${fmt(D.route_len)} м на эллипсоиде WGS-84, сгущение через 5 м.`,
+  `Фото: 72 снимка группы с GPS камеры и 70 своих; свои привязаны по времени съёмки к треку группы.`,
+  `Участок фото — по времени съёмки: время переводится в положение на маршруте и относится к ближайшему по ходу участку бланка.`,
+  `Типы растительности — кластеризация k-means (10 классов) сезонных кривых NDVI 2025 года (46 снимков Sentinel-2 L2A, сглаживание локальной регрессией), собственное приложение; длина тропы по типам — выборка через 5 м.`,
+  `Индекс нарушенности — средневзвешенный балл шести признаков бланка; устойчивость рейтинга — 20 000 наборов весов из распределения Дирихле.`,
+  `Ёмкость — метод Cifuentes (1992): PCC = (L / (G·sp + d)) · G · Hv/Tv; RCC = PCC · Π(1 − Cf); ECC = RCC · MC.`,
+  `Пожароопасность — комплексный показатель Нестерова: сумма t₁₃·(t₁₃ − τ₁₃) по дням, обнуление при осадках больше 3 мм за сутки; IV–V класс — больше 4000.`,
+  `Рельеф — Copernicus DEM GLO-30, билинейная интерполяция по точкам тропы, сглаживание 40 м; подъём за маршрут ${fmt(D.ascent)} м.`,
+].map(s => `<li>${s}</li>`).join('');
+$('#limits').innerHTML = [
+  'Длина по точкам фото занижает настоящий путь на изгибах: в первичной таблице по треку было 4,7 км.',
+  'Бланк порядковый: «сильно» на одном участке и на другом может значить разное. Две записи в бланке неразборчивы и помечены «?».',
+  'Реанализ ERA5 — ячейка около 25 км, а не метеостанция у озера; у воды и под кронами микроклимат мягче.',
+  'Модель рельефа над лесом показывает кроны, поэтому уклоны в поправку на размыв не взяты — только промоины, записанные в бланке.',
+  'Типы растительности выделены без учителя; названия даны по сезонной кривой и фото выезда и частью предположительны (например, «сады у воды», «ивняки»). Карта — 2025 год, выезд — 2026-й.',
+  'Обустройство учтено по фото; что не попало в кадр, могло быть пропущено. Нормы «сколько нужно» — мои, их стоит сверить с проектом тропы.',
+].map(s => `<li>${s}</li>`).join('');
+</script>
+
+</body></html>

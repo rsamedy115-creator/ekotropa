@@ -1,5 +1,3 @@
-<!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <title>Экотропа у озера Круглое</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -731,6 +729,7 @@ button,select,input{font:inherit;color:inherit}
 .camicon{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--lotus);color:#fff;font:600 10px/1 var(--mono);border:1.5px solid #fff;box-shadow:0 1px 4px rgb(0 0 0 / .4)}
 .camicon.own{background:#1E2A44}
 .leaflet-tooltip{font:12.5px/1.35 var(--body)}
+.leaflet-tooltip.wplab{padding:1px 6px;font:600 11.5px/1.3 var(--body)}
 
 /* панель */
 .pcard{display:grid;gap:10px}
@@ -803,6 +802,35 @@ tbody tr:hover{background:color-mix(in srgb,var(--lotus) 7%,transparent)}
 ol.src{padding-left:20px;display:grid;gap:6px;font-size:13.5px;max-width:90ch}
 footer{padding-block:40px;color:var(--muted);font-size:12.5px}
 
+/* проект тропы: слои методики, ключевые точки, остановки, приложения */
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px}
+.lcard{display:grid;gap:10px;align-content:start}
+.lcard .q{font-family:var(--display);font-size:17px;line-height:1.3}
+.sym{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;font:600 10px/1 var(--mono);color:#fff}
+.vicon{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font:700 12px/1 var(--body);color:#fff;border:2px solid #fff;box-shadow:0 1px 6px rgb(0 0 0 / .45)}
+.vicon.multi{border-width:3px}
+.blabel,.amark{position:absolute;width:max-content}
+.blabel{background:rgb(255 255 255 / .92);color:#122238;border-radius:3px;padding:1px 5px;font:600 11px/1.35 var(--body);white-space:nowrap;box-shadow:0 1px 3px rgb(0 0 0 / .3)}
+.bcirc{border-radius:50%;background:rgb(255 255 255 / .18);border:2px dashed #fff}
+.amark{display:flex;gap:3px;align-items:center}
+.amark i{display:block;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgb(0 0 0 / .4)}
+.amark .sq{width:12px;height:12px;border-radius:1px;background:#1F6FE0}
+.amark .tri{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid #8B5A2B;border-radius:0;box-shadow:none;filter:drop-shadow(0 0 1.5px #fff)}
+.verdict{font-size:12px;padding:2px 8px;border-radius:99px;white-space:nowrap;border:1px solid var(--line)}
+.verdict.key{background:var(--good);border-color:var(--good);color:#fff}
+.verdict.cond{border-color:var(--warn);color:var(--warn)}
+.verdict.tr{color:var(--muted)}
+.stops{display:grid;gap:14px;counter-reset:s}
+.stop{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:16px}
+.stop::before{counter-increment:s;content:counter(s);grid-row:span 4;font:30px/1 var(--display);color:var(--lotus);min-width:1.1em}
+.stop ul{margin:0;padding-left:18px;display:grid;gap:3px}
+.stop .thumbs{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{border:1px solid var(--line);background:var(--paper);border-radius:3px;padding:5px 12px;cursor:pointer}
+.tabs button[aria-selected=true]{border-color:var(--lotus);color:var(--lotus);font-weight:600}
+.divider{margin-top:72px;padding:26px 0 0;border-top:3px double var(--line);display:grid;gap:10px}
+#appTable tbody tr,#keyTable tbody tr,#checkTable tbody tr{cursor:default}
+
 /* просмотр фото */
 #lb{position:fixed;inset:0;z-index:2000;background:rgb(8 12 22 / .94);display:grid;grid-template-rows:1fr auto;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 #lb img{max-width:100%;max-height:100%;object-fit:contain;margin:auto;display:block;min-height:0}
@@ -839,10 +867,10 @@ footer{padding-block:40px;color:var(--muted);font-size:12.5px}
 
 <header class="top">
   <div class="wrap">
-    <div class="eyebrow">Организация экологического туризма и заповедное дело · личное задание</div>
+    <div class="eyebrow">Организация экологического туризма и заповедное дело · камеральная обработка выезда</div>
     <h1>Экотропа у озера Круглое</h1>
-    <p class="lede">Электронная карта выезда 9 октября 2026 года и расчёт допустимой нагрузки на тропу. Основа — бланк 1 группы ПР-241 (9 участков), фотографии с координатами и данные спутников. Щёлкните точку на карте, чтобы открыть её фото и запись бланка.</p>
-    <div class="meta"><span>Волго-Ахтубинская пойма, г. Волжский</span><span>Группа ПР-241</span><span>17 °C, ясно</span></div>
+    <p class="lede">Проект экологической тропы по материалам выезда 9 октября 2026 года. Три сводные таблицы — оценка воздействия (группа А), фотофиксация (группа Б) и навигация (группа В) — остаются отдельными документами и встречаются на этой карте: каждая даёт свой слой, а тропа проходит там, где их выводы сходятся. Щёлкните точку, чтобы открыть её записи и фото.</p>
+    <div class="meta"><span>Волго-Ахтубинская пойма, г. Волжский</span><span>Группы ПР-241, ПР-231</span><span>17 °C, ясно</span></div>
     <div class="stats" id="stats"></div>
   </div>
 </header>
@@ -853,6 +881,55 @@ footer{padding-block:40px;color:var(--muted);font-size:12.5px}
     <aside id="panel" aria-live="polite"></aside>
   </div>
 </div>
+
+<section class="block" id="sverka"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Шаг 3 · сверка трёх таблиц</div>
+    <h2>Все три таблицы описывают одни и те же точки</h2>
+    <p class="lede" id="sverkaLede"></p>
+  </div>
+  <div class="panel scroll"><p class="swipe">Таблица шире экрана — листайте вбок →</p><table id="checkTable"></table></div>
+</div></section>
+
+<section class="block" id="sloi"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Шаги 4–6 · три слоя на карте</div>
+    <h2>Каждая таблица отвечает на свой вопрос</h2>
+    <p class="lede">Слои наносятся в порядке методики: сначала точки маршрута из таблицы В, поверх — категории снимков из таблицы Б и воздействие из таблицы А. Включаются и выключаются в «Слоях карты».</p>
+  </div>
+  <div class="grid3" id="layerCards"></div>
+</div></section>
+
+<section class="block" id="klyuch"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Шаг 7 · совмещение слоёв</div>
+    <h2>Где сходятся три основания</h2>
+    <p class="lede" id="klyuchLede"></p>
+  </div>
+  <div class="panel scroll"><p class="swipe">Таблица шире экрана — листайте вбок →</p><table id="keyTable"></table></div>
+</div></section>
+
+<section class="block" id="liniya"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Шаги 8–9 · линия тропы и рекомендации</div>
+    <h2 id="liniyaH"></h2>
+    <p class="lede" id="liniyaLede"></p>
+  </div>
+  <div class="stops" id="stops"></div>
+</div></section>
+
+<section class="block" id="prilozh"><div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Приложения · три сводные таблицы</div>
+    <h2>Таблицы А, Б и В — отдельными документами</h2>
+    <p class="lede">Таблицы не сливаются: здесь каждая в том виде, в каком её сдала группа.</p>
+  </div>
+  <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="A" aria-selected="true">А · воздействие</button><button type="button" role="tab" data-tab="B" aria-selected="false">Б · фотофиксация</button><button type="button" role="tab" data-tab="V" aria-selected="false">В · навигация</button></div>
+  <div class="panel scroll"><p class="swipe">Таблица шире экрана — листайте вбок →</p><table id="appTable"></table></div>
+  <p class="note" style="margin-top:10px" id="appNote"></p>
+</div></section>
+
+<div class="wrap"><div class="divider"><div class="eyebrow">Дополнительно · сверх методики</div><h2>Что ещё видно со спутника и сколько людей выдержит тропа</h2><p class="lede">Этот раздел не входит в методику камеральной обработки. Он описывает весь пройденный маршрут (петлю 4,7 км), а не спроектированную тропу: растительность по снимкам Sentinel-2, нарушенность участков в числах, погоду за десять лет и допустимую нагрузку по методу Cifuentes. Справочный материал к проекту.</p></div></div>
 
 <section class="block" id="profil"><div class="wrap">
   <div class="head">
@@ -920,7 +997,7 @@ footer{padding-block:40px;color:var(--muted);font-size:12.5px}
 </div></section>
 
 <section class="block" id="vyvody"><div class="wrap">
-  <div class="head"><div class="eyebrow">Итог</div><h2>Выводы и предложения</h2></div>
+  <div class="head"><div class="eyebrow">Итог</div><h2>Выводы по всему маршруту</h2></div>
   <div class="findings" id="findings"></div>
 </div></section>
 
@@ -941,7 +1018,7 @@ footer{padding-block:40px;color:var(--muted);font-size:12.5px}
   </ol></div>
 </div></section>
 
-<footer><div class="wrap">Группа ПР-241 · Волжский филиал ВолГУ · октябрь 2026 · карта и расчёты собраны из бланка 1, 142 фотографий выезда и открытых спутниковых данных</div></footer>
+<footer><div class="wrap">Группы ПР-241 и ПР-231 · Волжский филиал ВолГУ · октябрь 2026 · таблица А — группа оценки воздействия (Попов А., Поляков М., Иванова М.), таблица Б — группа фотофиксации (Чуйкина, Листратова), таблица В — группа навигации (трек и точки QField) · электронная карта — Поляков М.</div></footer>
 
 <div id="lb" hidden role="dialog" aria-modal="true" aria-label="Просмотр фото">
   <div class="imgbox"><img id="lbImg" alt=""></div>
@@ -949,8 +1026,9 @@ footer{padding-block:40px;color:var(--muted);font-size:12.5px}
     <div style="display:flex;gap:8px"><button id="lbPrev" type="button">← Назад</button><button id="lbNext" type="button">Вперёд →</button><button id="lbClose" type="button">Закрыть</button></div></div>
 </div>
 
-<script src="lib/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="data.js"></script>
+<script src="group.js"></script>
 <script>
 const D = window.TRAIL;
 const $ = s => document.querySelector(s);
@@ -1012,17 +1090,19 @@ document.addEventListener('click', e => {
 });
 
 /* ---------------- шапка ---------------- */
+const G = window.GROUP;
+const GP = Object.fromEntries(G.points.map(p => [p.id, p]));
 $('#stats').innerHTML = [
-  [fmt(D.route_len / 1000, 2) + ' км', 'маршрут по GPS'],
-  [D.time_total_min + ' мин', `в пути, из них ${D.moving_min} в движении`],
-  ['9', 'участков бланка 1'],
-  [D.photos.length, 'фото на карте'],
-  ['<span id="eccHead">—</span>', 'человек в день — допустимо', 'hl'],
+  [fmt(G.track_len / 1000, 1) + ' км', 'пройдено по треку навигаторов'],
+  ['9', 'точек WP во всех трёх таблицах'],
+  [G.tableB.length, 'кадров фотофиксации'],
+  [fmt(G.trail_len / 1000, 2) + ' км', 'проектная тропа', 'hl'],
+  [G.stops.length, 'остановок', 'hl'],
 ].map(([b, s, c]) => `<div class="stat ${c || ''}"><b>${b}</b><span>${s}</span></div>`).join('');
 
 /* ---------------- карта ---------------- */
 const map = L.map('map', {zoomSnap: .25, minZoom: 14, maxZoom: 19, maxBounds: L.latLngBounds(D.layers.esri).pad(.15)});
-map.fitBounds(L.latLngBounds(D.route.map(r => [r[0], r[1]])).pad(.08));
+map.fitBounds(L.latLngBounds(G.track).pad(.08));
 map.attributionControl.setPrefix(false);
 const bases = {
   esri: L.imageOverlay('layers/esri_park.jpg', D.layers.esri, {attribution: 'Снимок: Esri World Imagery'}),
@@ -1030,10 +1110,41 @@ const bases = {
 };
 const vegLayer = L.imageOverlay('layers/veg_types.png', D.layers.veg, {opacity: 0, attribution: 'Типы: сезон Sentinel-2 2025'});
 bases.esri.addTo(map); vegLayer.addTo(map);
-const roiLayer = L.geoJSON(D.roi, {style: {color: '#fff', weight: 1.5, dashArray: '5 5', fill: false, opacity: .8}}).addTo(map);
+const roiLayer = L.geoJSON(D.roi, {style: {color: '#fff', weight: 1.5, dashArray: '5 5', fill: false, opacity: .8}});
+
+// ---- проект тропы по методике: трек навигаторов, три слоя, линия тропы
+const trackLayer = L.layerGroup().addTo(map);
+L.polyline(G.track, {color: '#111', weight: 7, opacity: .5}).addTo(trackLayer);
+L.polyline(G.track, {color: '#fff', weight: 3, opacity: .95, dashArray: '6 6'}).bindTooltip('Трек навигаторов (QField), ' + fmt(G.track_len) + ' м', {sticky: true}).addTo(trackLayer);
+const trailLayer = L.layerGroup().addTo(map);
+L.polyline(G.trail, {color: '#111', weight: 13, opacity: .45}).addTo(trailLayer);
+L.polyline(G.trail, {color: '#FFD23F', weight: 7, opacity: 1}).bindTooltip(`Проектная тропа: ${fmt(G.trail_len)} м, ${G.stops.length} остановок`, {sticky: true}).addTo(trailLayer);
+const showPoint = id => { if (id.startsWith('WP')) showWP(id); else showFinish(); if (stacked()) $('#panel').scrollIntoView({behavior: 'smooth', block: 'start'}); };
+const short = id => id.startsWith('WP') ? id : 'Смотровая';
+const layerV = L.layerGroup().addTo(map), layerB = L.layerGroup().addTo(map), layerA = L.layerGroup().addTo(map);
+G.points.forEach(p => {
+  const c0 = G.v_color[p.v[0]];
+  const ring = p.v.length > 1 ? `;box-shadow:0 0 0 3px ${G.v_color[p.v[1]]},0 1px 6px rgb(0 0 0 / .45)` : '';
+  // слой В: значок типа объекта и код точки
+  L.marker([p.lat, p.lon], {zIndexOffset: 600, keyboard: true, title: p.id,
+    icon: L.divIcon({className: '', html: `<div class="vicon" style="background:${c0}${ring}">${p.v[0]}</div>`, iconSize: [30, 30]})})
+    .bindTooltip(`<b>${short(p.id)}</b>`, {permanent: true, direction: 'top', offset: [0, -16], className: 'wplab'})
+    .on('click', () => showPoint(p.id)).addTo(layerV);
+  // слой Б: подпись категорий и кружок, тем больше, чем больше кадров одной категории
+  if (p.b_n) {
+    const r = 10 + p.b_max * 2.2;
+    L.marker([p.lat, p.lon], {interactive: false, zIndexOffset: -50,
+      icon: L.divIcon({className: '', html: `<div class="bcirc" style="width:${2 * r}px;height:${2 * r}px"></div>`, iconSize: [2 * r, 2 * r]})}).addTo(layerB);
+    L.marker([p.lat, p.lon], {interactive: false, zIndexOffset: 400,
+      icon: L.divIcon({className: '', html: `<div class="blabel">${Object.keys(p.b).sort((a, b) => p.b[b] - p.b[a]).join(', ')}</div>`, iconSize: [0, 0], iconAnchor: [-18, 6]})}).addTo(layerB);
+  }
+  // слой А: цвет воздействия, синий квадрат — инфраструктура в хорошем состоянии, коричневый треугольник — эрозия берега
+  if (p.a) L.marker([p.lat, p.lon], {interactive: false, zIndexOffset: 450,
+    icon: L.divIcon({className: '', html: `<div class="amark"><i style="background:${G.a_color[p.a]}"></i>${p.infra_ok ? '<i class="sq"></i>' : ''}${p.erosion ? '<i class="tri"></i>' : ''}</div>`, iconSize: [0, 0], iconAnchor: [p.infra_ok || p.erosion ? 52 : 34, 8]})}).addTo(layerA);
+});
 
 // маршрут: по типам растительности или по нарушенности участков
-const routeLayer = L.layerGroup().addTo(map);
+const routeLayer = L.layerGroup();
 let routeMode = 'veg';
 function drawRoute() {
   routeLayer.clearLayers();
@@ -1055,7 +1166,7 @@ function drawRoute() {
 function wpAt(d) { return WPS.reduce((a, w) => Math.abs(w.dist - d) < Math.abs(a.dist - d) ? w : a); }
 
 // фото: точки съёмки, снимки с одного места — одним значком
-const photoLayer = L.layerGroup().addTo(map);
+const photoLayer = L.layerGroup();
 const spots = {};
 D.photos.forEach(p => { const k = p.lat.toFixed(5) + ',' + p.lon.toFixed(5); (spots[k] ||= []).push(p.id); });
 Object.values(spots).forEach(ids => {
@@ -1069,7 +1180,7 @@ Object.values(spots).forEach(ids => {
 
 // участки бланка
 const wpMarkers = {};
-const wpLayer = L.layerGroup().addTo(map);
+const wpLayer = L.layerGroup();
 WPS.forEach(w => {
   const icon = L.divIcon({className: '', html: `<div class="wpicon" style="background:${rdiColor(w.rdi)}">${w.id.slice(3)}</div>`, iconSize: [30, 30]});
   wpMarkers[w.id] = L.marker([w.lat, w.lon], {icon, zIndexOffset: 500, keyboard: true, title: w.id})
@@ -1084,15 +1195,21 @@ const Ctl = L.Control.extend({options: {position: 'topright'}, onAdd() {
     <div class="eyebrow">Подложка</div>
     <label><input type="radio" name="base" value="esri" checked id="bEsri"> Снимок высокого разрешения</label>
     <label><input type="radio" name="base" value="s2" id="bS2"> Sentinel-2, лето 2025</label>
+    <div class="eyebrow">Проект тропы</div>
+    <label><input type="checkbox" checked id="oTrack"> Трек навигаторов</label>
+    <label><input type="checkbox" checked id="oV"> Слой В · типы точек</label>
+    <label><input type="checkbox" checked id="oB"> Слой Б · категории снимков</label>
+    <label><input type="checkbox" checked id="oA"> Слой А · воздействие</label>
+    <label><input type="checkbox" checked id="oTrail"> Линия тропы</label>
+    <details><summary class="eyebrow" style="margin-top:6px">Дополнительно ▸</summary><div style="display:grid;gap:5px;margin-top:5px">
     <div class="eyebrow">Типы растительности</div>
     <input type="range" min="0" max="1" step=".05" value="0" id="vegOp" aria-label="Прозрачность слоя типов растительности">
-    <div class="eyebrow">Цвет маршрута</div>
-    <label><input type="radio" name="rmode" value="veg" checked id="rVeg"> по типам растительности</label>
-    <label><input type="radio" name="rmode" value="rdi" id="rRdi"> по нарушенности участков</label>
-    <div class="eyebrow">Объекты</div>
-    <label><input type="checkbox" checked id="oWp"> Участки бланка 1</label>
-    <label><input type="checkbox" checked id="oPh"> Места съёмки фото</label>
-    <label><input type="checkbox" checked id="oRoi"> Граница области анализа</label>`;
+    <label><input type="checkbox" id="oRoute"> Маршрут по фото, цвет:</label>
+    <label style="padding-left:20px"><input type="radio" name="rmode" value="veg" checked id="rVeg"> типы растительности</label>
+    <label style="padding-left:20px"><input type="radio" name="rmode" value="rdi" id="rRdi"> индекс нарушенности</label>
+    <label><input type="checkbox" id="oWp"> Индекс нарушенности участков</label>
+    <label><input type="checkbox" id="oPh"> Места съёмки фото</label>
+    <label><input type="checkbox" id="oRoi"> Граница области анализа</label></div></details>`;
   L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
   return d;
 }});
@@ -1103,7 +1220,8 @@ document.querySelectorAll('input[name=base]').forEach(r => r.onchange = () => {
 $('#vegOp').oninput = e => { vegLayer.setOpacity(+e.target.value); if (+e.target.value > 0 && panelMode === 'home') showHome(); };
 document.querySelectorAll('input[name=rmode]').forEach(r => r.onchange = () => { routeMode = r.value; drawRoute(); });
 const tog = (id, layer) => $(id).onchange = e => e.target.checked ? layer.addTo(map) : map.removeLayer(layer);
-tog('#oWp', wpLayer); tog('#oPh', photoLayer); tog('#oRoi', roiLayer);
+tog('#oWp', wpLayer); tog('#oPh', photoLayer); tog('#oRoi', roiLayer); tog('#oRoute', routeLayer);
+tog('#oTrack', trackLayer); tog('#oV', layerV); tog('#oB', layerB); tog('#oA', layerA); tog('#oTrail', trailLayer);
 L.control.scale({imperial: false, position: 'bottomleft'}).addTo(map);
 drawRoute();
 
@@ -1116,18 +1234,52 @@ function legendTypes() {
   return `<div class="legend">${D.types.filter(t => t.route_m > 0).sort((a, b) => b.route_m - a.route_m)
     .map(t => `<div><span class="sw" style="background:${t.color}"></span><span style="flex:1">${esc(t.name)}</span><span class="num">${fmt(t.route_m)} м</span></div>`).join('')}</div>`;
 }
+function legendProject() {
+  const used = new Set(G.points.flatMap(p => p.v));
+  return `<div class="legend">
+    <div class="eyebrow">Слой В · тип точки (навигация)</div>
+    ${Object.entries(G.v_name).map(([k, n]) => `<div style="${used.has(k) ? '' : 'opacity:.45'}"><span class="sym" style="background:${G.v_color[k]}">${k}</span>${n}${used.has(k) ? '' : ' — нет на маршруте'}</div>`).join('')}
+    <div class="eyebrow" style="margin-top:4px">Слой Б · категории снимков (фото)</div>
+    <div><span class="blabel">Л, Б</span> категории на точке, первая — самая частая; пунктирный круг тем больше, чем больше кадров одной категории</div>
+    <div class="note">Л — ландшафт, И — инфраструктура, В — воздействие, С — семиотика, Т — видовая точка, Б — биота</div>
+    <div class="eyebrow" style="margin-top:4px">Слой А · воздействие (оценка)</div>
+    ${Object.entries(G.a_color).map(([k, c]) => `<div><span class="sym" style="background:${c};border:2px solid #fff;box-shadow:0 0 0 1px var(--line)"></span>${k}</div>`).join('')}
+    <div><span class="sym" style="background:#1F6FE0;border-radius:1px;width:13px;height:13px"></span>инфраструктура в хорошем состоянии</div>
+    <div><span style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid #8B5A2B;flex:none"></span>эрозия берега</div>
+  </div>`;
+}
+function threeTables(id) {
+  const p = GP[id], c = G.check.find(x => x.wp === id), a = G.tableA.find(x => x.wp === id);
+  const vd = {'ключевая': 'key', 'при обустройстве': 'cond', 'ключевая, если подтвердится воздействие': 'cond'}[p.verdict] || 'tr';
+  return `<div class="chips"><span class="verdict ${vd}">шаг 7: ${p.verdict}</span>${G.stops.includes(id) ? `<span class="verdict key" style="background:#FFD23F;border-color:#E0B000;color:#122238">остановка ${G.stops.indexOf(id) + 1}</span>` : ''}</div>
+    <dl class="kv">
+      <dt>В · навигация</dt><dd>${p.v.map(v => `<span class="sym" style="background:${G.v_color[v]};vertical-align:-4px">${v}</span> ${G.v_name[v]}`).join(', ')}<br><span class="note">${esc(p.v_basis)}</span></dd>
+      <dt>Б · фото</dt><dd>${p.b_n ? `${p.b_n} кадр. · ${Object.entries(p.b).sort((x, y) => y[1] - x[1]).map(([k, n]) => `${k} ${n}`).join(', ')}` : 'кадров нет'}${p.b_promising ? '<br><span class="note">Б: в тройке перспективных</span>' : ''}${p.b_worst ? '<br><span class="note">Б: в тройке с наибольшим воздействием</span>' : ''}</dd>
+      <dt>А · воздействие</dt><dd>${p.a ? `<span class="sym" style="background:${G.a_color[p.a]};vertical-align:-4px"></span> ${p.a}${p.infra_ok ? ' · инфраструктура удовл.' : ''}${p.erosion ? ' · эрозия берега' : ''}` : 'нет записи'}</dd>
+      ${c && !c.ok ? `<dt>Сверка</dt><dd style="color:var(--warn)">${c.issues.join('; ')}</dd>` : ''}
+    </dl>`;
+}
+function showFinish() {
+  panelMode = 'wp';
+  const p = GP['Окончание тропы'];
+  $('#panel').innerHTML = `<div class="pcard"><button class="back" type="button" id="backBtn">← Весь маршрут</button>
+    <div class="eyebrow">Точка трека навигаторов · конец маршрута</div><h3>Смотровая площадка на бровке террасы</h3>
+    ${threeTables(p.id)}
+    <p class="note">Группа А закончила оценку на WP-09, поэтому записи о воздействии здесь нет. Кадры 69–72 группа Б отнесла к WP-09, но по GPS камеры они сняты здесь — в 260 м от источника.</p>
+    <div class="eyebrow">Кадры Б · ${p.b_frames.length}</div>${thumbs(p.b_frames)}</div>`;
+  $('#backBtn').onclick = backHome;
+}
 function showHome() {
   panelMode = 'home';
   Object.values(wpMarkers).forEach(m => m.getElement()?.firstChild?.classList.remove('sel'));
   $('#panel').innerHTML = `<div class="pcard">
-    <div class="eyebrow">Маршрут группы ПР-241 · 09.10.2026</div>
-    <h3>Петля ${fmt(D.route_len / 1000, 2)} км от спортплощадки через лес и берег озера к источнику</h3>
-    <p class="note">Цифры в кружках — участки бланка 1, цвет — нарушенность: <span style="color:var(--good)">●</span> слабая, <span style="color:var(--warn)">●</span> средняя, <span style="color:var(--bad)">●</span> сильная. Значки с числом — места съёмки фото: синие — камера группы, тёмные — телефон; число — сколько снимков сделано на этом месте.</p>
-    <div class="eyebrow" style="margin-top:6px">Под тропой: длина по типам растительности</div>
-    ${legendTypes()}
-    <p class="note">Тип «${esc(TYPE[-1].name.split(':')[0])}» — серый. Слой типов включается ползунком в «Слоях карты».</p>
-    <div class="eyebrow" style="margin-top:6px">Самое интересное на маршруте</div>
-    ${thumbs(['TC_00075', 'TC_00087', 'TC_00103', 'TC_00082', 'TC_00070', 'TC_00142'])}
+    <div class="eyebrow">Карта, где встречаются три таблицы</div>
+    <h3>Тропа ${fmt(G.trail_len / 1000, 2)} км от парковки к пляжу — ${G.stops.length} остановок</h3>
+    <p class="note">Белый пунктир — трек навигаторов (${fmt(G.track_len / 1000, 1)} км), жёлтая линия — проектная тропа.</p>
+    ${legendProject()}
+    ${$('#vegOp') && +$('#vegOp').value > 0 ? '<div class="eyebrow" style="margin-top:6px">Типы растительности под маршрутом</div>' + legendTypes() : ''}
+    <div class="eyebrow" style="margin-top:6px">Остановки тропы</div>
+    ${thumbs(G.stops.map(id => ({'WP-03': 'TC_00046', 'WP-04': 'TC_00051', 'WP-05': 'TC_00087', 'WP-06': 'TC_00103', 'WP-07': 'TC_00107'})[id]))}
   </div>`;
 }
 function showWP(id) {
@@ -1144,8 +1296,10 @@ function showWP(id) {
   if (GROUP_VERDICT[id]) chips.push([GROUP_VERDICT[id].startsWith('можно') ? 'good' : 'bad', 'вывод группы: ' + GROUP_VERDICT[id]]);
   $('#panel').innerHTML = `<div class="pcard">
     <button class="back" type="button" id="backBtn">← Весь маршрут</button>
-    <div class="eyebrow">Участок бланка 1 · ${w.time} · ${fmt(w.dist)} м от старта</div>
+    <div class="eyebrow">Точка ${id} · ${w.time} · ${fmt(GP[id].d)} м от начала трека</div>
     <h3>${id}: ${esc(w.landscape === 'не отмечен' ? 'тип ландшафта не отмечен' : w.landscape)}</h3>
+    ${threeTables(id)}
+    <div class="eyebrow" style="margin-top:4px">Дополнительно: бланк А в числах</div>
     <div class="chips">${chips.map(([c, s]) => `<span class="chip ${c}">${s}</span>`).join('')}</div>
     <div><div style="display:flex;justify-content:space-between;font-size:13px"><span>Индекс нарушенности · стадия ${STAGE(w.rdi)}</span><span class="num">${fmt(w.rdi, 2)}</span></div>
       <div class="scorebar"><i style="width:${w.rdi * 100}%;background:${rdiColor(w.rdi)}"></i></div>
@@ -1294,7 +1448,7 @@ function calc() {
   const r = capacity();
   $('#bigNums').innerHTML = `<div><b>${fmt(r.PCC)}</b><span>физическая, чел./день</span></div><div><b>${fmt(r.RCC)}</b><span>реальная, чел./день</span></div>
     <div class="e"><b>${fmt(r.ECC)}</b><span>действующая, чел./день · ≈ ${fmt(r.ECC / st.G)} групп · ${fmt(r.ECC * C.season_days / 1000, 1)} тыс. за сезон</span></div>`;
-  $('#eccHead').textContent = fmt(r.ECC);
+  if ($('#eccHead')) $('#eccHead').textContent = fmt(r.ECC);
   $('#formula').innerHTML = `групп на тропе = ⌊${fmt(st.L)} / (${st.G} × ${sp} м + ${st.dg} м)⌋ = ${r.NG}; людей одновременно = ${r.P}<br>
     проходов за день = ${fmt(st.Hv, 1)} ч / ${fmt(st.Tv, 2)} ч = ${fmt(r.NV, 2)}<br>
     PCC = ${r.P} × ${fmt(r.NV, 2)} = <b>${fmt(r.PCC)}</b><br>
@@ -1408,6 +1562,69 @@ $('#mcTable').innerHTML = `<thead><tr><th>Что нужно экотропе</th
   $('#findings').innerHTML = F.map(([h, p]) => `<div class="finding"><h3>${h}</h3><p>${p}</p></div>`).join('');
 })();
 
+/* ---------------- проект тропы: шаги 3–9 и приложения ---------------- */
+(function project() {
+  const bad = G.check.filter(c => !c.ok);
+  $('#sverkaLede').innerHTML = `Сверка не по содержанию, а по кодам точек и времени. Во всех трёх таблицах одни и те же <b>9 точек WP-01 — WP-09</b>; у навигаторов к ним добавлены начало и окончание трека. Для каждой точки есть хотя бы один кадр группы Б и запись группы А, время первого кадра совпадает со временем записи А в пределах 1–2 минут. Проблемная точка одна — <b>${bad.map(c => c.wp).join(', ')}</b>: ${bad.map(c => c.issues.join('; ')).join('; ')}. По времени (13:04–13:10) и координатам камеры эти кадры сняты у смотровой площадки в конце трека; на карте они стоят там, а в таблице Б оставлены как есть.`;
+  $('#checkTable').innerHTML = `<thead><tr><th>Точка</th><th>В · есть в треке</th><th style="text-align:center">Б · кадров</th><th>Б · время кадров</th><th>А · запись</th><th>А · время</th><th>Итог</th></tr></thead><tbody>` +
+    G.check.map(c => `<tr><td><b>${c.wp}</b></td><td>да</td><td class="c">${c.b_frames}</td><td class="num">${c.b_first}–${c.b_last}</td><td>да · ${c.a_level}</td><td class="num">${c.a_time}</td>
+      <td>${c.ok ? '<span class="verdict key">сходится</span>' : `<span class="verdict cond">проверить</span> <span class="note">${c.issues.join('; ')}</span>`}</td></tr>`).join('') + '</tbody>';
+
+  const vCount = Object.fromEntries(Object.keys(G.v_name).map(k => [k, G.points.filter(p => p.v.includes(k)).map(p => short(p.id).replace('WP-', ''))]));
+  const bRich = [...G.points].filter(p => p.b_n).sort((a, b) => Object.keys(b.b).length - Object.keys(a.b).length || b.b_n - a.b_n);
+  $('#layerCards').innerHTML = [
+    ['Таблица В · навигаторы', 'Где на маршруте вообще есть объекты, достойные включения в тропу?',
+      Object.entries(vCount).map(([k, ids]) => `<div><span class="sym" style="background:${G.v_color[k]}">${k}</span>${G.v_name[k]}: ${ids.length ? ids.join(', ') : '—'}</div>`).join(''),
+      'Выходов к воде три — WP-04, 05, 07; видовая точка одна — смотровая на бровке в конце трека; препятствий и развилок на треке нет. Координаты и трек — из проекта QField навигаторов; тип объекта уточнён на камеральном этапе по треку, снимку и фото выезда.'],
+    ['Таблица Б · фотографы', 'Где на маршруте есть что показать?',
+      bRich.slice(0, 5).map(p => `<div><span class="blabel">${short(p.id)}: ${Object.keys(p.b).join(', ')}</span><span class="note">${p.b_n} кадр.</span></div>`).join(''),
+      `Богаче всего по содержанию WP-04 и WP-05 (пять и четыре категории) и пляж WP-07 (семь кадров биоты). Беднее — WP-01–03 у входа. Сама группа Б назвала перспективными WP-04, 05, 06. Всего ${G.tableB.length} кадров, по категориям: Л 22, И 17, В 16, С 6, Т 2, Б 17 (кадр может входить в две категории).`],
+    ['Таблица А · оценщики', 'Где на маршруте будут проблемы организации тропы, а где — опора для её создания?',
+      Object.keys(G.a_color).map(k => `<div><span class="sym" style="background:${G.a_color[k]}"></span>${k}: ${G.points.filter(p => p.a === k).map(p => p.id.slice(3)).join(', ') || '—'}</div>`).join('') +
+      `<div><span class="sym" style="background:#1F6FE0;border-radius:1px;width:13px;height:13px"></span>инфраструктура в хорошем состоянии: ${G.points.filter(p => p.infra_ok).map(p => p.id.slice(3)).join(', ')}</div>
+       <div><span style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid #8B5A2B;flex:none"></span>эрозия берега: ${G.points.filter(p => p.erosion).map(p => p.id.slice(3)).join(', ')}</div>`,
+      'Уровень — по выводам самой группы А: три участка «требуют первоочередного обустройства» — сильно, три «пригодны без вмешательства» — слабо, остальные — средне. Без следов воздействия группа не записала ни одного участка.'],
+  ].map(([h, q, body, note]) => `<div class="panel lcard"><div class="eyebrow">${h}</div><p class="q">${q}</p><div class="legend">${body}</div><p class="note">${note}</p></div>`).join('');
+
+  const ok = v => `<span style="color:var(--good);font-weight:600">${v}</span>`, no = v => `<span class="note">${v}</span>`;
+  $('#klyuchLede').innerHTML = `Правило методики: <b>ключевая</b> точка — тип «Т» или «В» в таблице В, категория «Л» или «Б» в таблице Б и воздействие «нет» или «слабо» в таблице А. <b>Конфликт</b> — те же содержание и вид, но воздействие среднее или сильное: точку включаем при условии обустройства (методика пишет это для видовых точек, мы так же поступаем с выходами к воде). <b>Исключаем</b> препятствия и сильное воздействие без возможности исправить — таких точек нет: на всех сильных участках группа А предложила меры.`;
+  $('#keyTable').innerHTML = `<thead><tr><th>Точка</th><th>В: Т или В?</th><th>Б: Л или Б?</th><th>А: нет или слабо?</th><th>Итог шага 7</th><th>На тропе</th></tr></thead><tbody>` +
+    G.points.map(p => {
+      const v = p.v.filter(x => x === 'Т' || x === 'В'), b = ['Л', 'Б'].filter(x => p.b[x]);
+      const vd = {'ключевая': 'key', 'при обустройстве': 'cond', 'ключевая, если подтвердится воздействие': 'cond'}[p.verdict] || 'tr';
+      const why = {'WP-03': 'остановка-вход: парковка, шлагбаум, начало леса', 'WP-06': 'по выбору группы Б: смена сообществ и опунция'}[p.id];
+      return `<tr><td><b>${short(p.id)}</b></td><td>${v.length ? ok(v.join(', ')) : no(p.v.join(', '))}</td><td>${b.length ? ok(b.join(', ')) : no(Object.keys(p.b).join(', ') || '—')}</td>
+        <td>${p.a ? (['нет', 'слабо'].includes(p.a) ? ok(p.a) : no(p.a)) : no('нет записи')}</td><td><span class="verdict ${vd}">${p.verdict}</span></td>
+        <td>${G.stops.includes(p.id) ? `<b>остановка ${G.stops.indexOf(p.id) + 1}</b>${why ? `<br><span class="note">${why}</span>` : ''}` : p.id === 'Окончание тропы' ? `<span class="note">вне линии: ${fmt(G.alt_len)} м от источника и 2,4 км от пляжа — второй вариант тропы</span>` : no('транзит')}</td></tr>`;
+    }).join('') + '</tbody>';
+
+  $('#liniyaH').textContent = `Тропа ${fmt(G.trail_len / 1000, 2)} км: от парковки к пляжу, ${G.stops.length} остановок`;
+  $('#liniyaLede').innerHTML = `Линия идёт по фактическому треку навигаторов, а не напрямую через лес. По шагу 7 в тропу просятся три точки — WP-07 (ключевая), WP-04 и WP-05 (при обустройстве), все на берегу. Их соединяет отрезок трека от парковки WP-03 до пляжа WP-07 длиной ${fmt(G.trail_len)} м — в пределах 2 км; группа прошла его за ${G.trail_min} мин вместе с описанием точек, то есть экскурсия укладывается в час. Начало — у парковки и шлагбаума (WP-03), пятая остановка — WP-06, которую группа Б выбрала в тройку перспективных. Препятствий на линии нет. Смотровая площадка и источник (WP-09) — в другом конце петли: вместе с пляжем они в 2 км не помещаются, поэтому это второй, короткий вариант тропы от города (${fmt(G.alt_len)} м).`;
+  $('#stops').innerHTML = G.stops.map(id => {
+    const r = G.rec[id], p = GP[id];
+    return `<div class="stop"><h3>${id} · ${r.title}</h3>
+      <p><b>Что это за точка.</b> ${r.what}</p>
+      <p><b>Состояние.</b> ${r.state}</p>
+      <div><b>Что предлагается:</b><ul>${r.todo.map(t => `<li>${t}</li>`).join('')}</ul></div>
+      <div style="grid-column:2">${thumbs(p.b_frames.slice(0, 6))}</div></div>`;
+  }).join('');
+
+  const tabs = {
+    A: [`<thead><tr><th>WP</th><th>Время</th><th>Ландшафт</th><th>Ширина, м</th><th>Стихийных троп</th><th>Мусор</th><th>Костровища</th><th>Вытаптывание</th><th>Берег</th><th>Инфраструктура</th></tr></thead><tbody>` +
+      G.tableA.map(a => `<tr><td><b>${a.wp}</b></td><td class="num">${a.time}</td><td>${esc(a.landscape)}</td><td class="c">${esc(a.width)}</td><td class="c">${esc(a.spont)}</td><td>${esc(a.litter)}</td><td>${esc(a.fires)}</td><td>${esc(a.trampling)}</td><td>${esc(a.shore)}</td><td>${esc(a.infra)}</td></tr>`).join('') + '</tbody>',
+      'Бланк «Оценка рекреационного воздействия и инфраструктуры», группа А: Попов Артём, Поляков Матвей, Иванова Мария. Выводы группы: первоочередное обустройство — WP-04, 05, 02; пригодны без вмешательства — WP-09, 08, 07.'],
+    B: [`<thead><tr><th>№</th><th>Кадр</th><th>Время</th><th>WP</th><th>Категория</th><th>Связь</th><th>Состояние</th><th>Описание</th></tr></thead><tbody>` +
+      G.tableB.map(f => `<tr><td class="c">${f.n}</td><td class="num">${f.photo}</td><td class="num">${f.time}</td><td>${f.wp}</td><td>${f.cats.join(' / ')}</td><td>${esc(f.link)}</td><td>${esc(f.state)}</td><td class="note" style="min-width:260px">${esc(f.desc)}</td></tr>`).join('') + '</tbody>',
+      `Протокол фотофиксации, группа Б: фотограф Чуйкина, протоколист Листратова; ${G.tableB.length} кадров. Перспективные точки по мнению группы — WP-04, 05, 06; наибольшее воздействие — WP-01, 03, 04.`],
+    V: [`<thead><tr><th>Точка</th><th>Широта</th><th>Долгота</th><th>От начала трека, м</th><th>Тип объекта</th><th>Основание типа</th></tr></thead><tbody>` +
+      [{id: 'Начало тропы', lat: G.start[0], lon: G.start[1], d: 0, v: [], v_basis: ''}, ...G.points].map(p => `<tr><td><b>${p.id}</b></td><td class="num">${fmt(p.lat, 6)}</td><td class="num">${fmt(p.lon, 6)}</td><td class="num">${fmt(p.d)}</td><td>${p.v.map(v => `<span class="sym" style="background:${G.v_color[v]};vertical-align:-4px">${v}</span>`).join(' ')}</td><td class="note">${esc(p.v_basis)}</td></tr>`).join('') + '</tbody>',
+      `Проект QField группы навигаторов: трек «Тропа» (${fmt(G.track_len)} м, старт 10:13) и точки WP-01 — WP-09 с началом и окончанием тропы. Тип объекта уточнён на камеральном этапе по треку, снимку высокого разрешения и фото выезда.`],
+  };
+  const show = k => { $('#appTable').innerHTML = tabs[k][0]; $('#appNote').textContent = tabs[k][1]; document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === k)); };
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => show(b.dataset.tab));
+  show('A');
+})();
+
 /* ---------------- методы ---------------- */
 $('#methods').innerHTML = [
   `Маршрут — ломаная по ${D.photos.filter(p => p.src === 'группа' && p.gps).length} снимкам группы с GPS (точность до 20 м) и 9 точкам бланка; длина ${fmt(D.route_len)} м на эллипсоиде WGS-84, сгущение через 5 м.`,
@@ -1428,5 +1645,3 @@ $('#limits').innerHTML = [
   'Обустройство учтено по фото; что не попало в кадр, могло быть пропущено. Нормы «сколько нужно» — мои, их стоит сверить с проектом тропы.',
 ].map(s => `<li>${s}</li>`).join('');
 </script>
-
-</body></html>
